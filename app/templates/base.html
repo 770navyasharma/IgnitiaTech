@@ -33,13 +33,13 @@
         </div>
         
         <nav class="sidebar-nav">
-            <a href="{{ url_for('home') }}" class="{{ 'active' if active_page == 'home' else '' }}"><i class="fas fa-home"></i> <span>Dashboard</span></a>
-            <a href="{{ url_for('analytics') }}" class="{{ 'active' if active_page == 'analytics' else '' }}"><i class="fas fa-chart-bar"></i> <span>Analytics</span></a>
-            <a href="{{ url_for('reports') }}" class="{{ 'active' if active_page == 'reports' else '' }}"><i class="fas fa-file-alt"></i> <span>Reports</span></a>
-            <a href="{{ url_for('projects') }}" class="{{ 'active' if active_page == 'projects' else '' }}"><i class="fas fa-folder"></i> <span>Projects</span></a>
-            <a href="{{ url_for('messages') }}" class="{{ 'active' if active_page == 'messages' else '' }}"><i class="fas fa-envelope"></i> <span>Messages</span></a>
-            <a href="{{ url_for('settings') }}" class="{{ 'active' if active_page == 'settings' else '' }}"><i class="fas fa-cog"></i> <span>Settings</span></a>
-            <a href="{{ url_for('logout') }}"><i class="fas fa-sign-out-alt"></i> <span>Logout</span></a>
+            <a href="{{ url_for('main.home') }}" class="{{ 'active' if active_page == 'home' else '' }}"><i class="fas fa-home"></i> <span>Dashboard</span></a>
+            <a href="{{ url_for('main.analytics') }}" class="{{ 'active' if active_page == 'analytics' else '' }}"><i class="fas fa-chart-bar"></i> <span>Analytics</span></a>
+            <a href="{{ url_for('main.reports') }}" class="{{ 'active' if active_page == 'reports' else '' }}"><i class="fas fa-file-alt"></i> <span>Reports</span></a>
+            <a href="{{ url_for('main.projects') }}" class="{{ 'active' if active_page == 'projects' else '' }}"><i class="fas fa-folder"></i> <span>Projects</span></a>
+            <a href="{{ url_for('main.messages') }}" class="{{ 'active' if active_page == 'messages' else '' }}"><i class="fas fa-envelope"></i> <span>Messages</span></a>
+            <a href="{{ url_for('main.settings') }}" class="{{ 'active' if active_page == 'settings' else '' }}"><i class="fas fa-cog"></i> <span>Settings</span></a>
+            <a href="{{ url_for('main.logout') }}"><i class="fas fa-sign-out-alt"></i> <span>Logout</span></a>
         </nav>
     </aside>
 
@@ -62,7 +62,7 @@
                     </div>
                     
                     <a href="#" class="icon-button"><i class="fas fa-bell"></i></a>
-                    <a href="{{ url_for('profile') }}" class="profile-link">
+                    <a href="{{ url_for('main.profile') }}" class="profile-link">
                         {% if current_user.profile_pic_url == 'default-profile-pic.png' %}
                             <img src="{{ url_for('static', filename='images/' + current_user.profile_pic_url) }}" alt="Profile" class="profile-pic">
                         {% else %}

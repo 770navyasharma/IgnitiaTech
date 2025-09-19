@@ -153,13 +153,13 @@
 }
 
 /* --- Modern Icon Button Style --- */
-.icon-button {
+.icon-button-dash{
     background-color: transparent;
     border: 1px solid var(--border-color);
     color: var(--text-secondary);
-    width: 36px;
-    height: 36px;
-    border-radius: 50%; /* Makes the button a perfect circle */
+    width: 35px;
+    height: 35px;
+    border-radius: 50%; 
     display: flex;
     align-items: center;
     justify-content: center;
@@ -168,7 +168,8 @@
     transition: all 0.2s ease-in-out;
 }
 
-.icon-button:hover {
+
+.icon-button-dash:hover{
     background-color: var(--accent-primary);
     color: #ffffff;
     border-color: var(--accent-primary);
@@ -176,7 +177,7 @@
     box-shadow: 0 4px 10px rgba(0,0,0,0.1);
 }
 
-.icon-button:active {
+.icon-button-dash:active {
     transform: translateY(0); /* Resets lift on click */
     box-shadow: none;
 }
@@ -188,7 +189,7 @@
     gap: 10px;
 }
 /* Thread Feed (Now inside the main card) */
-.thread-feed-header .icon-button { /* Re-using this class from reference */
+.thread-feed-header .icon-button-dash { /* Re-using this class from reference */
     background: none;
     border: none;
     color: var(--text-secondary);

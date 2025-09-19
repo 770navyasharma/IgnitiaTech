@@ -225,7 +225,7 @@ body.sidebar-collapsed .sidebar-nav a i {
 .top-bar-right {
     display: flex;
     align-items: center;
-    gap: 25px;
+    gap: 20px;
 }
 
 /* --- Updated Search Bar Styles --- */

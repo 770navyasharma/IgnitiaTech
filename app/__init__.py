@@ -5,27 +5,30 @@ from flask_login import LoginManager
 from .models import db, User
 
 def create_app():
-    app = Flask(__name__)
+    # Use instance_relative_config to tell Flask the instance folder is outside the app package
+    app = Flask(__name__, instance_relative_config=True) 
     
     # --- Configurations ---
-    app.config['SECRET_KEY'] = 'a-very-secret-key-that-you-should-change'
-    basedir = os.path.abspath(os.path.dirname(__file__))
-    
-    # Correct path for the instance folder at the root level
-    instance_path = os.path.join(basedir, '../instance')
-    os.makedirs(instance_path, exist_ok=True)
-    app.config['SQLALCHEMY_DATABASE_URI'] = f'sqlite:///{os.path.join(instance_path, "site.db")}'
-    app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-    
-    # Set the upload folder path relative to the app package
-    app.config['UPLOAD_FOLDER'] = os.path.join(basedir, 'static/profile_pics')
-    os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
+    app.config.from_mapping(
+        SECRET_KEY='a-very-secret-key-that-you-should-change',
+        # This tells SQLAlchemy where to create the database inside the instance folder
+        SQLALCHEMY_DATABASE_URI=f'sqlite:///{os.path.join(app.instance_path, "site.db")}',
+        SQLALCHEMY_TRACK_MODIFICATIONS=False,
+    )
 
+    # Ensure the instance folder exists
+    try:
+        os.makedirs(app.instance_path)
+    except OSError:
+        pass
+
+    # Set the upload folder path relative to the app package's static folder
+    app.config['UPLOAD_FOLDER'] = os.path.join(app.static_folder, 'profile_pics')
+    os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
 
     # --- Initialize Extensions ---
     db.init_app(app)
     login_manager = LoginManager(app)
-    # Redirect to the login route within the 'main' blueprint
     login_manager.login_view = 'main.login' 
     login_manager.login_message_category = 'info'
 
