@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Dashboard{% endblock %} - IgnitiaTech</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+
+    <script>
+        // This runs instantly, before anything is painted
+        const savedState = localStorage.getItem('sidebarState');
+        if (savedState === 'collapsed') {
+            document.documentElement.dataset.sidebarState = 'collapsed';
+        } else {
+            document.documentElement.dataset.sidebarState = 'open';
+        }
+    </script>
+</head>
+<body>
+
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <div class="sidebar-logo">
+                <img id="sidebar-toggle-btn" src="{{ url_for('static', filename='images/logo.png') }}" alt="IgnitiaTech Logo">
+                <span>IgnitiaTech</span>
+            </div>
+        </div>
+        
+        <nav class="sidebar-nav">
+            <a href="{{ url_for('home') }}" class="{{ 'active' if active_page == 'home' else '' }}"><i class="fas fa-home"></i> <span>Dashboard</span></a>
+            <a href="{{ url_for('analytics') }}" class="{{ 'active' if active_page == 'analytics' else '' }}"><i class="fas fa-chart-bar"></i> <span>Analytics</span></a>
+            <a href="{{ url_for('reports') }}" class="{{ 'active' if active_page == 'reports' else '' }}"><i class="fas fa-file-alt"></i> <span>Reports</span></a>
+            <a href="{{ url_for('projects') }}" class="{{ 'active' if active_page == 'projects' else '' }}"><i class="fas fa-folder"></i> <span>Projects</span></a>
+            <a href="{{ url_for('messages') }}" class="{{ 'active' if active_page == 'messages' else '' }}"><i class="fas fa-envelope"></i> <span>Messages</span></a>
+            <a href="{{ url_for('settings') }}" class="{{ 'active' if active_page == 'settings' else '' }}"><i class="fas fa-cog"></i> <span>Settings</span></a>
+            <a href="{{ url_for('logout') }}"><i class="fas fa-sign-out-alt"></i> <span>Logout</span></a>
+        </nav>
+    </aside>
+
+    <div class="content-wrapper">
+        <main class="content-area">
+            <div class="top-content-bar">
+                <div class="page-title">
+                    <h1>{% block page_title %}{% endblock %}</h1>
+                </div>
+
+                <div class="top-bar-right">
+                    <a href="#" class="btn btn-primary btn-new-investigation">
+                        <i class="fas fa-plus"></i> New Investigation
+                    </a>
+                    <div class="search-container">
+                        <form action="#" method="GET">
+                            <i class="fas fa-search search-icon"></i>
+                            <input type="search" class="search-input" placeholder="Search anything...">
+                        </form>
+                    </div>
+                    
+                    <a href="#" class="icon-button"><i class="fas fa-bell"></i></a>
+                    <a href="{{ url_for('profile') }}" class="profile-link">
+                        {% if current_user.profile_pic_url == 'default-profile-pic.png' %}
+                            <img src="{{ url_for('static', filename='images/' + current_user.profile_pic_url) }}" alt="Profile" class="profile-pic">
+                        {% else %}
+                            <img src="{{ url_for('static', filename='profile_pics/' + current_user.profile_pic_url) }}" alt="Profile" class="profile-pic">
+                        {% endif %}
+                    </a>
+                    
+                </div>
+            </div>
+
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    <div class="flash-messages">
+                    {% for category, message in messages %}
+                        <div class="alert alert-{{ category }}">{{ message }}</div>
+                    {% endfor %}
+                    </div>
+                {% endif %}
+            {% endwith %}
+
+            <div class="page-content">
+                {% block content %}{% endblock %}
+            </div>
+        </main>
+    </div>
+
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>
