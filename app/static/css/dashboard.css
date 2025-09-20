@@ -9,7 +9,8 @@
 
 .dashboard-grid {
     display: grid;
-    grid-template-columns: 2fr 1fr;
+    /* UPDATED: Changed the ratio for a more balanced look */
+    grid-template-columns: 3fr 2fr;
     gap: 24px;
     align-items: start;
 }
@@ -19,7 +20,7 @@
     background-color: var(--bg-primary);
     border: 1px solid var(--border-color);
     border-radius: 16px;
-    margin-bottom: 24px;
+    /* REMOVED: margin-bottom from here for better grid control */
 }
 
 .dashboard-card-header {
@@ -34,13 +35,6 @@
     border-top-right-radius: 16px;
 }
 
-.drone-card-image{
-    background-color: var(--bg-secondary);
-    border-radius: 10px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
 .dashboard-card-content {
     padding: 20px;
 }
@@ -52,60 +46,50 @@
     margin: 0;
 }
 
+
+/* ============================================= */
+/* START OF UPDATED SECTION            */
+/* ============================================= */
+
 /* Investigation Cards (Now inside the main card) */
 .investigation-grid {
     display: grid;
-    /* CHANGE THIS LINE to enforce a two-column layout */
-    grid-template-columns: repeat(2, 1fr); 
-    gap: 20px;
+    grid-template-columns: repeat(2, 1fr);
+    /* UPDATED: Smaller gap for a more compact look */
+    gap: 15px;
 }
 
-.investigation-card {
-    background-color: #ffffff; /* White background for the inner cards */
-    border: 1px solid var(--border-color);
-    border-radius: 12px;
-    padding: 20px;
-    transition: transform 0.2s, box-shadow 0.2s;
+/* --- NEW: Dashboard-specific card resizing --- */
+.dashboard-grid .inv-card .inv-card-image {
+    /* Make the image shorter */
+    height: 120px;
 }
 
-.investigation-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 8px 15px rgba(0,0,0,0.05);
+.dashboard-grid .inv-card .inv-card-top-header {
+    /* Reduce header padding */
+    padding: 12px 15px;
 }
 
-.card-header {
-    margin-bottom: 15px;
+.dashboard-grid .inv-card .inv-card-content {
+    /* Reduce content padding */
+    padding: 15px;
 }
 
-.status-tag {
-    display: inline-block;
-    padding: 4px 10px;
-    border-radius: 12px;
-    font-size: 0.75rem;
-    font-weight: 600;
-    color: #fff;
+/* --- NEW: Title Truncation Logic --- */
+.dashboard-grid .inv-card h3 {
+    /* This ensures the title stays on one line */
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    /* We add a max-width to help the ellipsis engage sooner if needed */
+    max-width: 150px; 
 }
-.status-pending { background-color: #f59e0b; }
-.status-analysis { background-color: #3b82f6; }
-.status-in-progress { background-color: #8b5cf6; }
-.status-completed { background-color: #10b981; }
 
-.investigation-card .card-body img {
-    width: 100%;
-    max-width: 120px;
-    height: auto;
-    margin-bottom: 15px;
-    border-radius: 8px;
-}
-.investigation-card h3 {
-    font-size: 1rem;
-    color: var(--text-primary);
-    margin-bottom: 5px;
-}
-.investigation-card p {
-    font-size: 0.85rem;
-    color: var(--text-secondary);
-}
+
+/* ============================================= */
+/* END OF UPDATED SECTION             */
+/* ============================================= */
+
 
 /* Recent Reports List (Now inside the main card) */
 .report-list .report-item {

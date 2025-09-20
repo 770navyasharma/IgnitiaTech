@@ -2,7 +2,7 @@
 import os
 import secrets
 from PIL import Image
-from flask import Blueprint, render_template, redirect, url_for, flash, request, current_app
+from flask import Blueprint, render_template, redirect, url_for, flash, request, current_app, abort
 from flask_login import current_user, login_user, logout_user, login_required
 from .models import db, User, Investigation, Report, ThreadFeedItem
 from .forms import SignUpForm, LoginForm, UpdateProfileForm, NewInvestigationForm, EditInvestigationForm
@@ -10,13 +10,12 @@ from collections import defaultdict
 
 main = Blueprint('main', __name__)
 
-# --- NEW: Context Processor ---
-# This makes the 'new_investigation_form' globally available to all templates.
+# --- Context Processor ---
 @main.app_context_processor
 def inject_forms():
     return dict(
         new_investigation_form=NewInvestigationForm(),
-        edit_investigation_form=EditInvestigationForm() # Add this line
+        edit_investigation_form=EditInvestigationForm()
     )
 
 # --- Helper Function for Saving Picture ---
@@ -26,15 +25,13 @@ def save_picture(form_picture):
     picture_fn = random_hex + f_ext
     upload_path = os.path.join(current_app.root_path, 'static/profile_pics')
     picture_path = os.path.join(upload_path, picture_fn)
-
     output_size = (150, 150)
     i = Image.open(form_picture)
     i.thumbnail(output_size)
     i.save(picture_path)
     return picture_fn
     
-
-# --- Authentication Routes (Unchanged) ---
+# --- Authentication Routes ---
 @main.route('/signup', methods=['GET', 'POST'])
 def signup():
     if current_user.is_authenticated:
@@ -70,27 +67,32 @@ def logout():
     logout_user()
     return redirect(url_for('main.login'))
 
-# --- Dashboard Routes (UPDATED) ---
+# --- Dashboard & Page Routes ---
 @main.route('/')
 @login_required
 def home():
-    # This query gets the 4 most recent investigations to DISPLAY on the page
     active_investigations = Investigation.query.filter_by(author=current_user).order_by(Investigation.timestamp.desc()).limit(4).all()
-    
-    # NEW: This query gets the TOTAL count for the welcome message
     total_investigations_count = Investigation.query.filter_by(author=current_user).count()
-
-    # These are unchanged
     recent_reports = Report.query.filter_by(author=current_user).limit(4).all()
     thread_feed = ThreadFeedItem.query.order_by(ThreadFeedItem.timestamp.desc()).limit(5).all()
-    
     return render_template('home.html', 
                            active_page='home',
                            investigations=active_investigations,
-                           # Pass the new total count to the template
                            total_investigations_count=total_investigations_count,
                            reports=recent_reports,
                            feed_items=thread_feed)
+
+@main.route('/investigations')
+@login_required
+def investigations():
+    all_investigations = Investigation.query.filter_by(author=current_user).order_by(Investigation.timestamp.desc()).all()
+    grouped_investigations = defaultdict(list)
+    for inv in all_investigations:
+        date_key = inv.timestamp.date()
+        grouped_investigations[date_key].append(inv)
+    return render_template('investigations.html', 
+                           active_page='investigations',
+                           grouped_investigations=grouped_investigations)
 
 @main.route('/analytics')
 @login_required
@@ -106,24 +108,6 @@ def reports():
 @login_required
 def settings():
     return render_template('settings.html', active_page='settings')
-
-@main.route('/investigations')
-@login_required
-def investigations():
-    # Query all investigations created by the current user, newest first
-    all_investigations = Investigation.query.filter_by(author=current_user).order_by(Investigation.timestamp.desc()).all()
-    
-    # Group investigations by date
-    grouped_investigations = defaultdict(list)
-    for inv in all_investigations:
-        # group by the date part of the timestamp
-        date_key = inv.timestamp.date()
-        grouped_investigations[date_key].append(inv)
-
-    return render_template('investigations.html', 
-                           active_page='investigations',
-                           # Pass the grouped dictionary to the template
-                           grouped_investigations=grouped_investigations)
 
 @main.route('/messages')
 @login_required
@@ -218,6 +202,9 @@ def delete_investigation(investigation_id):
     return redirect(url_for('main.investigations'))
 
 
+# =============================================
+# START OF UPDATED ROUTE
+# =============================================
 @main.route('/investigation/<int:investigation_id>/update_status', methods=['POST'])
 @login_required
 def update_status(investigation_id):
@@ -225,17 +212,27 @@ def update_status(investigation_id):
     if inv.author != current_user:
         abort(403)
     
+    # This is an extra check we get from the JS to know if we should redirect
+    should_go_live = request.form.get('go_live')
+
     new_status = request.form.get('new_status')
     if new_status:
         inv.status = new_status
         db.session.commit()
         flash(f'Investigation status updated to {new_status}.', 'success')
+    
+    # If the action was 'Start' or 'Continue', the JS will send 'go_live'.
+    # This tells our backend to redirect to the live page.
+    if should_go_live:
+         return redirect(url_for('main.live_investigation', investigation_id=inv.id))
 
-        # If starting or continuing, go to the live page
-        if new_status == 'In Progress':
-             return redirect(url_for('main.live_investigation', investigation_id=inv.id))
-
+    # For any other status change (Pause, Complete), go back to the main list.
     return redirect(url_for('main.investigations'))
+# =============================================
+# END OF UPDATED ROUTE
+# =============================================
+
+
 
 
 @main.route('/investigation/<int:investigation_id>/edit', methods=['POST'])
@@ -262,11 +259,17 @@ def edit_investigation(investigation_id):
                 
     return redirect(url_for('main.investigations'))
 
-# Dummy route for the live investigation page
+
 @main.route('/investigation/<int:investigation_id>/live')
 @login_required
 def live_investigation(investigation_id):
     inv = Investigation.query.get_or_404(investigation_id)
-    if inv.author != current_user:
-        abort(403)
+    if inv.author != current_user: abort(403)
+    
+    # When entering the live page, ensure the status is 'Live'
+    if inv.status != 'Live':
+        inv.status = 'Live'
+        db.session.commit()
+
     return render_template('live_investigation.html', investigation=inv)
+

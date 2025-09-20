@@ -29,17 +29,45 @@
             </div>
             <div class="dashboard-card-content">
                 <div class="investigation-grid">
-                    {% for investigation in investigations %}
-                    <div class="investigation-card">
-                        <div class="card-header">
-                            <span class="status-tag status-{{ investigation.status.lower().replace(' ', '-') }}">{{ investigation.status }}</span>
+                    {% for inv in investigations %}
+                    <div class="inv-card">
+                        <div class="inv-card-top-header">
+                            <h3 title="{{ inv.title }}">{{ inv.title }}</h3>
+                            <span class="status-tag status-{{ inv.status.lower().replace(' ', '-') }}">{{ inv.status }}</span>
                         </div>
-                        <div class="card-body">
-                            <div class="drone-card-image">
-                                <img src="{{ url_for('static', filename='profile_pics/' + investigation.drone_photo) if investigation.drone_photo != 'default-drone.png' else url_for('static', filename='images/default-drone.png') }}" alt="Drone Image">
+                        <img src="{{ url_for('static', filename='profile_pics/' + inv.drone_photo) if inv.drone_photo != 'default-drone.png' else url_for('static', filename='images/default-drone.png') }}" alt="Drone Photo" class="inv-card-image">
+                        <div class="inv-card-content">
+                             <div class="inv-card-details">
+                                <p><i class="fas fa-map-marker-alt"></i> {{ inv.location }}</p>
+                                <p><i class="fas fa-calendar-alt"></i> {{ inv.timestamp.strftime('%b %d, %Y') }}</p>
                             </div>
-                            <h3>{{ investigation.title }}</h3>
-                            <p>{{ investigation.timestamp.strftime('%B %d, %Y') }}</p>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="dashboard-side-column">
+        <div class="dashboard-card" style="margin-bottom: 24px;">
+            <div class="dashboard-card-header">
+                <h2 class="section-title">Analytics</h2>
+                <div class="header-actions">
+                    <button class="icon-button-dash"><i class="fas fa-filter"></i></button>
+                    <button class="icon-button-dash"><i class="fas fa-sync-alt"></i></button>
+                </div>
+            </div>
+            <div class="dashboard-card-content">
+                <div class="feed-list">
+                    {% for item in feed_items %}
+                    <div class="feed-item">
+                        <div class="feed-icon">
+                            <i class="fas {{ item.icon }}"></i>
+                        </div>
+                        <div class="feed-info">
+                            <h4>{{ item.title }}</h4>
+                            <p>{{ item.timestamp.strftime('%I:%M %p') }}</p>
                         </div>
                     </div>
                     {% endfor %}
@@ -66,33 +94,6 @@
                             <p>Generated on {{ report.timestamp.strftime('%b %d, %Y') }}</p>
                         </div>
                         <button class="options-btn"><i class="fas fa-ellipsis-h"></i></button>
-                    </div>
-                    {% endfor %}
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="dashboard-side-column">
-        <div class="dashboard-card">
-            <div class="dashboard-card-header">
-                <h2 class="section-title">Thread Feed</h2>
-                <div class="header-actions">
-                    <button class="icon-button-dash"><i class="fas fa-filter"></i></button>
-                    <button class="icon-button-dash"><i class="fas fa-sync-alt"></i></button>
-                </div>
-            </div>
-            <div class="dashboard-card-content">
-                <div class="feed-list">
-                    {% for item in feed_items %}
-                    <div class="feed-item">
-                        <div class="feed-icon">
-                            <i class="fas {{ item.icon }}"></i>
-                        </div>
-                        <div class="feed-info">
-                            <h4>{{ item.title }}</h4>
-                            <p>{{ item.timestamp.strftime('%I:%M %p') }}</p>
-                        </div>
                     </div>
                     {% endfor %}
                 </div>
