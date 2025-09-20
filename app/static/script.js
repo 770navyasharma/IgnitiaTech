@@ -136,7 +136,8 @@ document.addEventListener('DOMContentLoaded', function () {
             captureBtn.addEventListener('click', () => {
                 const canvas = document.getElementById('canvas');
                 const capturesGrid = document.getElementById('captures-grid');
-                const context = canvas.getContext('d');
+                // YEH LINE THEEK KARNI HAI: 'd' ki jagah '2d'
+                const context = canvas.getContext('2d'); 
                 canvas.width = video.videoWidth;
                 canvas.height = video.videoHeight;
                 context.drawImage(video, 0, 0, canvas.width, canvas.height);
