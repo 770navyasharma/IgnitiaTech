@@ -265,3 +265,9 @@
     background-color: var(--accent-red);
     transform: rotate(90deg);
 }
+
+.status-buttons-group {
+    display: flex;
+    flex-grow: 2; /* This ensures the group takes up the remaining space */
+    gap: 10px;
+}
