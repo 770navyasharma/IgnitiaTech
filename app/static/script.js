@@ -136,7 +136,7 @@ document.addEventListener('DOMContentLoaded', function () {
             captureBtn.addEventListener('click', () => {
                 const canvas = document.getElementById('canvas');
                 const capturesGrid = document.getElementById('captures-grid');
-                // YEH LINE THEEK KARNI HAI: 'd' ki jagah '2d'
+                // THIS IS THE FIX: 'd' is changed to '2d'
                 const context = canvas.getContext('2d'); 
                 canvas.width = video.videoWidth;
                 canvas.height = video.videoHeight;
@@ -154,9 +154,7 @@ document.addEventListener('DOMContentLoaded', function () {
             updateTime();
         }
 
-        // =============================================
-        //  This listener will now work because the CSS fix allows clicks to reach it.
-        // =============================================
+        // This listener handles all the buttons on the live modal
         livePageContainer.addEventListener('click', function(e) {
             // Find which button was clicked, if any
             const pauseButton = e.target.closest('.status-action-btn.pause');
@@ -168,30 +166,29 @@ document.addEventListener('DOMContentLoaded', function () {
                 return;
             }
 
-            // Stop the default button/link behavior
             e.preventDefault();
 
             const id = livePageContainer.dataset.investigationId;
             const title = livePageContainer.dataset.investigationTitle;
 
-            // **HANDLE PAUSE AND CLOSE THE EXACT SAME WAY**
+            // Handle Pause and Close the exact same way
             if (pauseButton || closeButton) {
                 showConfirmationModal({
                     title: 'Pause Investigation',
                     message: `This will pause the investigation and return you to the main screen. Proceed?`,
                     confirmText: 'Yes, Pause',
-                    newStatus: 'Pending', // Set status to Pending
+                    newStatus: 'Pending',
                     formAction: `/investigation/${id}/update_status`
                 });
             } 
-            // **HANDLE COMPLETE BUTTON**
+            // Handle Complete Button
             else if (completeButton) {
                  showConfirmationModal({
                     title: 'Complete Investigation',
                     message: `Are you sure you want to mark <strong>${title}</strong> as complete?`,
                     confirmText: 'Yes, Complete',
                     buttonColor: 'red',
-                    newStatus: 'Completed', // Set status to Completed
+                    newStatus: 'Completed',
                     formAction: `/investigation/${id}/update_status`
                 });
             }
