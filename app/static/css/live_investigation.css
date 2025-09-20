@@ -134,14 +134,16 @@
     border: 1px solid var(--border-color);
     padding: 15px;
 }
-/* Revolving Border Effect for Panels */
-.sidebar-panel::before {
-    content: '';
-    position: absolute;
-    top: 50%; left: 50%;
-    width: 250%; height: 250%;
-    background: conic-gradient(transparent, var(--accent-primary), transparent 30%);
-    animation: rotate 6s linear infinite;
+/* Find this existing rule in your CSS file */
+.sidebar-panel {
+    background-color: var(--bg-secondary);
+    border-radius: 12px;
+    border: 1px solid var(--border-color);
+    padding: 15px;
+    
+    /* ADD THESE TWO LINES TO FIX THE ISSUE */
+    position: relative;
+    overflow: hidden;
 }
 .sidebar-panel-content {
     position: relative;
@@ -237,7 +239,8 @@
 }
 .capture-btn:hover { transform: translateY(-2px); box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
 .status-action-btn { 
-    flex-grow: 1; 
+    flex-grow: 1;
+    flex-basis: 0; /* This is the key change */
     background-color: var(--bg-secondary); 
     border: 1px solid var(--border-color); 
     color: var(--text-secondary); 
