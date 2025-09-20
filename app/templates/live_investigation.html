@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Live - {{ investigation.title }}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/live_investigation.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+</head>
+<body>
+    <div class="live-modal-container">
+        <div class="live-modal-content">
+
+            <div class="live-top-nav">
+                <div class="nav-left">
+                    <div class="nav-logo">
+                        <img src="{{ url_for('static', filename='images/logo.png') }}" alt="Logo">
+                        <span>IgnitiaTech</span>
+                    </div>
+                    <nav class="nav-menu">
+                        <a href="#" class="active">Controller</a>
+                        <a href="#">Overview</a>
+                        <a href="#">Routes</a>
+                        <a href="#">All Drones</a>
+                        <a href="#">Map View</a>
+                    </nav>
+                </div>
+                <div class="nav-right">
+                    <div class="nav-stat"><i class="fas fa-expand-arrows-alt"></i> 243.4 km²</div>
+                    <div class="nav-stat"><i class="fas fa-cloud-sun-rain"></i> Rain, 36°C</div>
+                    <div class="nav-stat"><span class="status-tag status-in-progress">Ongoing</span></div>
+                    <div class="nav-stat" id="live-time">12:00:00 PM</div>
+                    <a href="{{ url_for('main.investigations') }}" class="live-modal-close-link">
+                        <i class="fas fa-times"></i>
+                    </a>
+                </div>
+            </div>
+
+            <div class="live-body-grid">
+                
+                <div class="video-feed-container">
+                    <video id="camera-feed" autoplay playsinline></video>
+                    <div class="video-overlay">
+                        <div class="focus-reticle"><div class="focus-circle"></div></div>
+                    </div>
+                </div>
+
+                <div class="live-footer-container">
+                    <div class="map-panel">
+                        <div id="map-placeholder"></div>
+                    </div>
+                    <div class="capture-panel">
+                        <div class="captures-grid" id="captures-grid"></div>
+                        <div class="capture-actions">
+                            <button class="capture-btn" id="capture-btn"><i class="fas fa-camera"></i> Capture</button>
+                            <button class="status-action-btn pause" data-action="pause" data-status="Pending" data-id="{{ investigation.id }}" data-title="{{ investigation.title }}"><i class="fas fa-pause"></i> Pause</button>
+                            <button class="status-action-btn complete" data-action="complete" data-status="Completed" data-id="{{ investigation.id }}" data-title="{{ investigation.title }}"><i class="fas fa-flag-checkered"></i> Complete</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="live-sidebar">
+                    <div class="sidebar-panel">
+                        <div class="info-header">
+                            <img src="{{ url_for('static', filename='profile_pics/' + investigation.drone_photo) if investigation.drone_photo != 'default-drone.png' else url_for('static', filename='images/default-drone.png') }}">
+                            <div class="info-details">
+                                <h4>{{ investigation.drone_type }}</h4>
+                                <p><strong>ID:</strong> {{ investigation.id }}</p>
+                                <p><i class="fas fa-map-marker-alt"></i> {{ investigation.location }}</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="sidebar-panel">
+                        <div class="stat-item"><label>Battery</label><div class="battery-bar"><div class="battery-level"></div></div></div>
+                        <div class="stat-item"><label>Resolution: 1920x1080</label></div>
+                    </div>
+                    <div class="sidebar-panel" style="flex-grow: 1;">
+                        <div class="controller-layout"><div class="joystick"></div><div class="d-pad"></div></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% include '_confirmation_modal.html' %}
+
+    <canvas id="canvas" style="display:none;"></canvas>
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>

@@ -62,3 +62,28 @@ class UpdateProfileForm(FlaskForm):
             user = User.query.filter_by(email=email.data).first()
             if user:
                 raise ValidationError('That email is already registered.')
+            
+            
+# --- NEW: Investigation Form ---
+class NewInvestigationForm(FlaskForm):
+    title = StringField('Investigation Title', validators=[DataRequired(), Length(min=5, max=100)])
+    location = StringField('Location (e.g., City, State)', validators=[DataRequired(), Length(max=150)])
+    drone_type = SelectField('Primary Drone Type', choices=[
+        ('Multirotor', 'Multirotor'),
+        ('Fixed-Wing', 'Fixed-Wing'),
+        ('VTOL', 'VTOL Hybrid'),
+        ('FPV', 'FPV Freestyle/Racing'),
+        ('Unknown', 'Unknown/Other')
+    ], validators=[DataRequired()])
+    drone_photo = FileField('Upload Drone Photo', validators=[FileAllowed(['jpg', 'png', 'jpeg'])])
+    description = TextAreaField('Brief Description / Objectives', validators=[DataRequired(), Length(max=500)])
+    submit = SubmitField('Establish Investigation')
+    
+    
+# --- NEW: Investigation EDIT Form ---
+class EditInvestigationForm(FlaskForm):
+    title = StringField('Investigation Title', validators=[DataRequired(), Length(min=5, max=100)])
+    location = StringField('Location (e.g., City, State)', validators=[DataRequired(), Length(max=150)])
+    drone_photo = FileField('Update Drone Photo', validators=[FileAllowed(['jpg', 'png', 'jpeg'])])
+    description = TextAreaField('Brief Description / Objectives', validators=[DataRequired(), Length(max=500)])
+    submit = SubmitField('Save Changes')

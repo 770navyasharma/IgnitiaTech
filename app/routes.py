@@ -5,16 +5,27 @@ from PIL import Image
 from flask import Blueprint, render_template, redirect, url_for, flash, request, current_app
 from flask_login import current_user, login_user, logout_user, login_required
 from .models import db, User, Investigation, Report, ThreadFeedItem
-from .forms import SignUpForm, LoginForm, UpdateProfileForm
+from .forms import SignUpForm, LoginForm, UpdateProfileForm, NewInvestigationForm, EditInvestigationForm
+from collections import defaultdict
 
 main = Blueprint('main', __name__)
+
+# --- NEW: Context Processor ---
+# This makes the 'new_investigation_form' globally available to all templates.
+@main.app_context_processor
+def inject_forms():
+    return dict(
+        new_investigation_form=NewInvestigationForm(),
+        edit_investigation_form=EditInvestigationForm() # Add this line
+    )
 
 # --- Helper Function for Saving Picture ---
 def save_picture(form_picture):
     random_hex = secrets.token_hex(8)
     _, f_ext = os.path.splitext(form_picture.filename)
     picture_fn = random_hex + f_ext
-    picture_path = os.path.join(current_app.config['UPLOAD_FOLDER'], picture_fn)
+    upload_path = os.path.join(current_app.root_path, 'static/profile_pics')
+    picture_path = os.path.join(upload_path, picture_fn)
 
     output_size = (150, 150)
     i = Image.open(form_picture)
@@ -22,28 +33,8 @@ def save_picture(form_picture):
     i.save(picture_path)
     return picture_fn
     
-# --- Function to create dummy data ---
-def create_dummy_data_for_user(user):
-    # Dummy Investigations
-    inv1 = Investigation(title='DJI Mavic Investigation #202', status='Pending', drone_image='mavic.png', author=user)
-    inv2 = Investigation(title='DJI Avata Investigation #202', status='Analysis', drone_image='avata.png', author=user)
-    inv3 = Investigation(title='DJI Neo Investigation #2025', status='In Progress', drone_image='neo.png', author=user)
-    inv4 = Investigation(title='DJI Inspire Investigation #30', status='Completed', drone_image='inspire.png', author=user)
-    db.session.add_all([inv1, inv2, inv3, inv4])
-    # Dummy Reports
-    rep1 = Report(title='Forensic Analysis Report', file_type='pdf', author=user)
-    rep2 = Report(title='Monthly Summary Report', file_type='doc', author=user)
-    rep3 = Report(title='Incident Analysis Report', file_type='csv', author=user)
-    db.session.add_all([rep1, rep2, rep3])
-    # Dummy Thread Feed Items (global for all users for now)
-    if ThreadFeedItem.query.count() == 0:
-        feed1 = ThreadFeedItem(title='New Drone Detection in Restricted Area', icon='fa-satellite-dish')
-        feed2 = ThreadFeedItem(title='Suspicious Flight Pattern Detected', icon='fa-exclamation-triangle')
-        db.session.add_all([feed1, feed2])
-    db.session.commit()
 
-
-# --- Authentication Routes ---
+# --- Authentication Routes (Unchanged) ---
 @main.route('/signup', methods=['GET', 'POST'])
 def signup():
     if current_user.is_authenticated:
@@ -54,8 +45,6 @@ def signup():
         user.set_password(form.password.data)
         db.session.add(user)
         db.session.commit()
-        # Create dummy data for the new user
-        create_dummy_data_for_user(user)
         flash('Your account has been created! You can now log in.', 'success')
         return redirect(url_for('main.login'))
     return render_template('signup.html', title='Sign Up', form=form)
@@ -81,18 +70,25 @@ def logout():
     logout_user()
     return redirect(url_for('main.login'))
 
-
-# --- Dashboard Routes ---
+# --- Dashboard Routes (UPDATED) ---
 @main.route('/')
 @login_required
 def home():
-    active_investigations = Investigation.query.filter_by(author=current_user).limit(4).all()
+    # This query gets the 4 most recent investigations to DISPLAY on the page
+    active_investigations = Investigation.query.filter_by(author=current_user).order_by(Investigation.timestamp.desc()).limit(4).all()
+    
+    # NEW: This query gets the TOTAL count for the welcome message
+    total_investigations_count = Investigation.query.filter_by(author=current_user).count()
+
+    # These are unchanged
     recent_reports = Report.query.filter_by(author=current_user).limit(4).all()
     thread_feed = ThreadFeedItem.query.order_by(ThreadFeedItem.timestamp.desc()).limit(5).all()
     
     return render_template('home.html', 
                            active_page='home',
                            investigations=active_investigations,
+                           # Pass the new total count to the template
+                           total_investigations_count=total_investigations_count,
                            reports=recent_reports,
                            feed_items=thread_feed)
 
@@ -111,10 +107,23 @@ def reports():
 def settings():
     return render_template('settings.html', active_page='settings')
 
-@main.route('/projects')
+@main.route('/investigations')
 @login_required
-def projects():
-    return render_template('projects.html', active_page='projects')
+def investigations():
+    # Query all investigations created by the current user, newest first
+    all_investigations = Investigation.query.filter_by(author=current_user).order_by(Investigation.timestamp.desc()).all()
+    
+    # Group investigations by date
+    grouped_investigations = defaultdict(list)
+    for inv in all_investigations:
+        # group by the date part of the timestamp
+        date_key = inv.timestamp.date()
+        grouped_investigations[date_key].append(inv)
+
+    return render_template('investigations.html', 
+                           active_page='investigations',
+                           # Pass the grouped dictionary to the template
+                           grouped_investigations=grouped_investigations)
 
 @main.route('/messages')
 @login_required
@@ -135,9 +144,9 @@ def profile():
         current_user.email = form.email.data
         current_user.first_name = form.first_name.data
         current_user.last_name = form.last_name.data
-        # Update with new profile fields if you added them to the form
-        # current_user.role = form.role.data 
-        # current_user.organization = form.organization.data
+        current_user.role = form.role.data
+        current_user.organization = form.organization.data
+        current_user.website_url = form.website_url.data
         current_user.bio = form.bio.data
         db.session.commit()
         flash('Your profile has been updated!', 'success')
@@ -148,6 +157,9 @@ def profile():
         form.email.data = current_user.email
         form.first_name.data = current_user.first_name
         form.last_name.data = current_user.last_name
+        form.role.data = current_user.role
+        form.organization.data = current_user.organization
+        form.website_url.data = current_user.website_url
         form.bio.data = current_user.bio
     
     if current_user.profile_pic_url == 'default-profile-pic.png':
@@ -165,3 +177,96 @@ def delete_account():
     logout_user()
     flash('Your account has been permanently deleted.', 'info')
     return redirect(url_for('main.login'))
+
+# --- Create Investigation Route ---
+@main.route('/investigation/new', methods=['POST'])
+@login_required
+def new_investigation():
+    form = NewInvestigationForm()
+    if form.validate_on_submit():
+        investigation = Investigation(
+            title=form.title.data,
+            location=form.location.data,
+            drone_type=form.drone_type.data,
+            description=form.description.data,
+            author=current_user
+        )
+        if form.drone_photo.data:
+            photo_file = save_picture(form.drone_photo.data) 
+            investigation.drone_photo = photo_file
+        
+        db.session.add(investigation)
+        db.session.commit()
+        flash('Investigation Established Successfully! Status is now LIVE.', 'success')
+    else:
+        for field, errors in form.errors.items():
+            for error in errors:
+                flash(f"Error in {getattr(form, field).label.text}: {error}", 'danger')
+    return redirect(url_for('main.home'))
+
+
+
+@main.route('/investigation/<int:investigation_id>/delete', methods=['POST'])
+@login_required
+def delete_investigation(investigation_id):
+    inv = Investigation.query.get_or_404(investigation_id)
+    if inv.author != current_user:
+        abort(403) # Forbidden
+    db.session.delete(inv)
+    db.session.commit()
+    flash('Investigation has been deleted.', 'success')
+    return redirect(url_for('main.investigations'))
+
+
+@main.route('/investigation/<int:investigation_id>/update_status', methods=['POST'])
+@login_required
+def update_status(investigation_id):
+    inv = Investigation.query.get_or_404(investigation_id)
+    if inv.author != current_user:
+        abort(403)
+    
+    new_status = request.form.get('new_status')
+    if new_status:
+        inv.status = new_status
+        db.session.commit()
+        flash(f'Investigation status updated to {new_status}.', 'success')
+
+        # If starting or continuing, go to the live page
+        if new_status == 'In Progress':
+             return redirect(url_for('main.live_investigation', investigation_id=inv.id))
+
+    return redirect(url_for('main.investigations'))
+
+
+@main.route('/investigation/<int:investigation_id>/edit', methods=['POST'])
+@login_required
+def edit_investigation(investigation_id):
+    inv = Investigation.query.get_or_404(investigation_id)
+    if inv.author != current_user:
+        abort(403)
+    
+    form = EditInvestigationForm() # Use the new edit form
+    if form.validate_on_submit():
+        inv.title = form.title.data
+        inv.location = form.location.data
+        inv.description = form.description.data
+        if form.drone_photo.data:
+            photo_file = save_picture(form.drone_photo.data)
+            inv.drone_photo = photo_file
+        db.session.commit()
+        flash('Investigation details have been updated!', 'success')
+    else:
+        for field, errors in form.errors.items():
+            for error in errors:
+                flash(f"Error in {getattr(form, field).label.text}: {error}", 'danger')
+                
+    return redirect(url_for('main.investigations'))
+
+# Dummy route for the live investigation page
+@main.route('/investigation/<int:investigation_id>/live')
+@login_required
+def live_investigation(investigation_id):
+    inv = Investigation.query.get_or_404(investigation_id)
+    if inv.author != current_user:
+        abort(403)
+    return render_template('live_investigation.html', investigation=inv)

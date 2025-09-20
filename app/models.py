@@ -33,11 +33,15 @@ class User(UserMixin, db.Model):
         return f'<User {self.username}>'
 
 # --- NEW MODELS ---
+# --- UPDATED Investigation MODEL ---
 class Investigation(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(100), nullable=False)
-    status = db.Column(db.String(20), nullable=False) # e.g., 'Pending', 'In Progress', 'Completed'
-    drone_image = db.Column(db.String(100), nullable=False) # Path to a drone image
+    location = db.Column(db.String(150))
+    drone_type = db.Column(db.String(50))
+    description = db.Column(db.Text)
+    drone_photo = db.Column(db.String(20), nullable=False, default='default-drone.png') # For user-uploaded photos
+    status = db.Column(db.String(20), nullable=False, default='Live') # Default status is now 'Live'
     timestamp = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
 

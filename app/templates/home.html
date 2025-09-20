@@ -4,7 +4,15 @@
 
 {% block page_title %}
     Welcome, {{ current_user.first_name or current_user.username }}!
-    <h5 class="page-subtitle"><i>You have {{ investigations|length }} active investigations.</i></h5>
+    <h5 class="page-subtitle">
+        <i>You have {{ total_investigations_count }} active 
+        {% if total_investigations_count == 1 %}
+            investigation.
+        {% else %}
+            investigations.
+        {% endif %}
+        </i>
+    </h5>
 {% endblock %}
 
 {% block content %}
@@ -15,7 +23,9 @@
         <div class="dashboard-card">
             <div class="dashboard-card-header">
                 <h2 class="section-title">Active Investigations</h2>
-                <button class="options-btn"><i class="fas fa-ellipsis-v"></i></button>
+                <a href="{{ url_for('main.investigations') }}" class="view-all-link">
+                    View All <i class="fas fa-arrow-right"></i>
+                </a>
             </div>
             <div class="dashboard-card-content">
                 <div class="investigation-grid">
@@ -26,9 +36,9 @@
                         </div>
                         <div class="card-body">
                             <div class="drone-card-image">
-                                <img src="{{ url_for('static', filename='images/drones/' + investigation.drone_image) }}" alt="Drone Image">
+                                <img src="{{ url_for('static', filename='profile_pics/' + investigation.drone_photo) if investigation.drone_photo != 'default-drone.png' else url_for('static', filename='images/default-drone.png') }}" alt="Drone Image">
                             </div>
-                                <h3>{{ investigation.title }}</h3>
+                            <h3>{{ investigation.title }}</h3>
                             <p>{{ investigation.timestamp.strftime('%B %d, %Y') }}</p>
                         </div>
                     </div>
@@ -40,14 +50,16 @@
         <div class="dashboard-card">
             <div class="dashboard-card-header">
                 <h2 class="section-title">Recent Reports</h2>
-                <button class="options-btn"><i class="fas fa-ellipsis-v"></i></button>
+                <a href="{{ url_for('main.reports') }}" class="view-all-link">
+                    View All <i class="fas fa-arrow-right"></i>
+                </a>
             </div>
             <div class="dashboard-card-content">
                 <div class="report-list">
                     {% for report in reports %}
                     <div class="report-item">
                         <div class="file-icon icon-{{ report.file_type }}">
-                            <i class="fas fa-file-{{ report.file_type }}-alt"></i>
+                            {% if report.file_type == 'pdf' %} <i class="fas fa-file-pdf"></i> {% elif report.file_type == 'doc' %} <i class="fas fa-file-word"></i> {% elif report.file_type == 'csv' %} <i class="fas fa-file-csv"></i> {% else %} <i class="fas fa-file"></i> {% endif %}
                         </div>
                         <div class="report-info">
                             <h4>{{ report.title }}</h4>
@@ -68,7 +80,6 @@
                 <div class="header-actions">
                     <button class="icon-button-dash"><i class="fas fa-filter"></i></button>
                     <button class="icon-button-dash"><i class="fas fa-sync-alt"></i></button>
-                    <button class="options-btn"><i class="fas fa-ellipsis-v"></i></button>
                 </div>
             </div>
             <div class="dashboard-card-content">

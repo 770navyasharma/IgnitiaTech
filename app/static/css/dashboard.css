@@ -55,7 +55,8 @@
 /* Investigation Cards (Now inside the main card) */
 .investigation-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    /* CHANGE THIS LINE to enforce a two-column layout */
+    grid-template-columns: repeat(2, 1fr); 
     gap: 20px;
 }
 
@@ -222,3 +223,22 @@
 .feed-info { flex-grow: 1; }
 .feed-info h4 { font-size: 0.9rem; font-weight: 500; color: var(--text-primary); margin-bottom: 3px; }
 .feed-info p { font-size: 0.8rem; color: var(--text-secondary); }
+
+
+/* --- NEW: View All Link Style for Card Headers --- */
+.view-all-link {
+    text-decoration: none;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+    transition: color 0.2s ease;
+}
+
+.view-all-link:hover {
+    color: var(--text-primary);
+    text-decoration: underline;
+}
+
+.view-all-link i {
+    margin-left: 5px;
+}
