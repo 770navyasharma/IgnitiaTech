@@ -146,8 +146,9 @@
 }
 
 .custom-file-upload {
-    display: inline-flex;
-    align-items: center;
+    display: flex;
+    align-items: stretch;
+    align-content: space-around;
     justify-content: center;
     padding: 0 15px;
     height: 44px;
@@ -201,4 +202,10 @@
 .modal-form .btn-primary:hover {
     transform: translateY(-3px);
     box-shadow: 0 6px 20px hsla(256, 47%, 62%, 0.4);
+}
+
+.form-group-file {
+    display: flex;
+    justify-content: center;
+    align-items: stretch;
 }

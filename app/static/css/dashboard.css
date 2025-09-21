@@ -55,8 +55,12 @@
 .investigation-grid {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
-    /* UPDATED: Smaller gap for a more compact look */
     gap: 15px;
+}
+
+/* --- ADD THIS NEW RULE for dashboard card interactivity --- */
+.dashboard-grid .inv-card {
+    cursor: pointer;
 }
 
 /* --- NEW: Dashboard-specific card resizing --- */

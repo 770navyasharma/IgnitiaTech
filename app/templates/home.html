@@ -30,7 +30,11 @@
             <div class="dashboard-card-content">
                 <div class="investigation-grid">
                     {% for inv in investigations %}
-                    <div class="inv-card">
+                    <div class="inv-card"
+                         data-id="{{ inv.id }}" 
+                         data-title="{{ inv.title }}"
+                         data-status="{{ inv.status }}"
+                         data-timestamp="{{ inv.timestamp.strftime('%Y-%m-%d') }}">
                         <div class="inv-card-top-header">
                             <h3 title="{{ inv.title }}">{{ inv.title }}</h3>
                             <span class="status-tag status-{{ inv.status.lower().replace(' ', '-') }}">{{ inv.status }}</span>

@@ -30,6 +30,8 @@
     </script>
 </head>
 <body>
+    <!-- Add this once in base.html (inside <body>, near top or before </body>) -->
+<div class="flash-messages" aria-live="polite" aria-atomic="true"></div>
 
     <aside class="sidebar">
         <div class="sidebar-header">
@@ -44,7 +46,6 @@
             <a href="{{ url_for('main.analytics') }}" class="{{ 'active' if active_page == 'analytics' else '' }}"><i class="fas fa-chart-bar"></i> <span>Analytics</span></a>
             <a href="{{ url_for('main.reports') }}" class="{{ 'active' if active_page == 'reports' else '' }}"><i class="fas fa-file-alt"></i> <span>Reports</span></a>
             <a href="{{ url_for('main.investigations') }}" class="{{ 'active' if active_page == 'investigations' else '' }}"><i class="fas fa-search-location"></i> <span>Investigations</span></a>
-            <a href="{{ url_for('main.messages') }}" class="{{ 'active' if active_page == 'messages' else '' }}"><i class="fas fa-envelope"></i> <span>Messages</span></a>
             <a href="{{ url_for('main.settings') }}" class="{{ 'active' if active_page == 'settings' else '' }}"><i class="fas fa-cog"></i> <span>Settings</span></a>
             <a href="{{ url_for('main.logout') }}"><i class="fas fa-sign-out-alt"></i> <span>Logout</span></a>
         </nav>

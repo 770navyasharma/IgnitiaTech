@@ -19,10 +19,37 @@ document.addEventListener('DOMContentLoaded', function () {
         newInvModalOverlay.addEventListener('click', (e) => { if (e.target === newInvModalOverlay) newInvModalOverlay.classList.remove('active'); });
     }
 
-    // --- Dynamic Flash Message Logic ---
+    // --- Dynamic Flash Message Logic (updated) ---
+    // Auto-dismiss only non-persistent alerts
     document.querySelectorAll('.alert').forEach(alert => {
-        setTimeout(() => alert.classList.add('fade-out'), 5000);
-        alert.addEventListener('animationend', (e) => { if (e.animationName === 'fadeOut') alert.remove(); });
+    // If this is a persistent alert, skip auto-dismiss
+    if (alert.classList.contains('alert-persistent')) {
+        // still add an animationend listener to remove only when fadeOut happens (e.g. when user clicks close)
+        alert.addEventListener('animationend', (e) => {
+        if (e.animationName === 'fadeOut') alert.remove();
+        });
+        return;
+    }
+
+    // For normal alerts: add progress & auto fade
+    const timeout = 5000;
+    const timer = setTimeout(() => {
+        alert.classList.add('fade-out');
+    }, timeout);
+
+    // When fadeOut animation finishes, remove the node
+    alert.addEventListener('animationend', (e) => {
+        if (e.animationName === 'fadeOut') alert.remove();
+    });
+
+    // If user manually closes before timeout, clear the timeout
+    const closeBtn = alert.querySelector('.alert-close-btn');
+    if (closeBtn) {
+        closeBtn.addEventListener('click', () => {
+        clearTimeout(timer);
+        alert.classList.add('fade-out');
+        });
+    }
     });
 
     // --- Edit Modal Logic ---
@@ -48,7 +75,7 @@ document.addEventListener('DOMContentLoaded', function () {
         if(cancelBtn) cancelBtn.addEventListener('click', closeConfirmationModal);
     }
 
-    // Function to open the confirmation modal with specific details
+    // Function to open the confirmation modal
     function showConfirmationModal(config) {
         const titleEl = document.getElementById('confirmation-title');
         const messageEl = document.getElementById('confirmation-message');
@@ -79,47 +106,126 @@ document.addEventListener('DOMContentLoaded', function () {
         
         confirmationModalOverlay.classList.add('active');
     }
+    
+    function showCustomFlash(message) {
+        const container = document.querySelector('.flash-messages');
+        if (!container) {
+            console.warn('Flash container not found: .flash-messages');
+            return;
+        }
 
-    // Event listener for the main investigations page
-    const investigationsContainer = document.querySelector('.investigations-grid');
-    if (investigationsContainer) {
-        investigationsContainer.addEventListener('click', function(e) {
-            const button = e.target.closest('.inv-action-btn');
-            if (!button) return;
-            
-            const card = button.closest('.inv-card');
+        const alertDiv = document.createElement('div');
+        alertDiv.className = 'alert alert-persistent';
+
+        // Accessibility
+        alertDiv.setAttribute('role', 'status');
+        alertDiv.setAttribute('aria-live', 'polite');
+
+        const alertContent = document.createElement('div');
+        alertContent.className = 'alert-content';
+
+        const alertIcon = document.createElement('div');
+        alertIcon.className = 'alert-icon';
+        alertIcon.innerHTML = '<i class="fas fa-exclamation-triangle" aria-hidden="true"></i>';
+
+        const alertMessage = document.createElement('div');
+        alertMessage.className = 'alert-message';
+        // message expected to contain safe HTML like an <a href="...">; keep as innerHTML
+        alertMessage.innerHTML = message;
+
+        const closeBtn = document.createElement('button');
+        closeBtn.className = 'alert-close-btn';
+        closeBtn.setAttribute('aria-label', 'Close alert');
+        closeBtn.innerHTML = '<i class="fas fa-times" aria-hidden="true"></i>';
+
+        // Close handler: start fadeOut and remove only after animation ends
+        closeBtn.addEventListener('click', () => {
+            // Add fade-out class to play animation
+            alertDiv.classList.add('fade-out');
+        });
+
+        // Make sure we remove only after our fadeOut animation runs
+        alertDiv.addEventListener('animationend', (e) => {
+            if (e.animationName === 'fadeOut') {
+            alertDiv.remove();
+            }
+        });
+
+        alertContent.appendChild(alertIcon);
+        alertContent.appendChild(alertMessage);
+        alertDiv.appendChild(alertContent);
+        alertDiv.appendChild(closeBtn);
+
+        // Put newest on top
+        container.prepend(alertDiv);
+
+        // Focus the close button for keyboard accessibility
+        closeBtn.focus();
+    }
+
+    // =============================================
+    // UNIFIED EVENT LISTENER FOR ALL CARD GRIDS
+    // =============================================
+    const mainContentArea = document.querySelector('.content-area');
+    if(mainContentArea) {
+        mainContentArea.addEventListener('click', function(e) {
+            const card = e.target.closest('.inv-card');
+            if (!card) return; // Exit if the click wasn't on or inside a card
+
+            const isDashboard = card.closest('.dashboard-grid');
+            const actionButton = e.target.closest('.inv-action-btn');
+
             const id = card.dataset.id;
             const title = card.dataset.title;
-            const action = button.dataset.action;
+            const status = card.dataset.status;
+            const timestamp = card.dataset.timestamp;
 
-            if (action === 'edit') {
-                const editForm = document.getElementById('edit-investigation-form');
-                editForm.querySelector('[name="title"]').value = card.dataset.title;
-                editForm.querySelector('[name="location"]').value = card.dataset.location;
-                editForm.querySelector('[name="description"]').value = card.dataset.description;
-                editForm.action = `/investigation/${id}/edit`;
-                if (editModalOverlay) editModalOverlay.classList.add('active');
-            } else if (action === 'delete') {
-                showConfirmationModal({
-                    title: 'Confirm Deletion', message: `Delete <strong>${title}</strong>?`,
-                    confirmText: 'Yes, Delete', buttonColor: 'red',
-                    formAction: `/investigation/${id}/delete`
-                });
-            } else if (action === 'start') {
-                showConfirmationModal({
-                    title: 'Start Investigation', message: `Open live screen for <strong>${title}</strong>?`,
-                    confirmText: 'Yes, Start', newStatus: 'Live', goLive: true,
-                    formAction: `/investigation/${id}/update_status`
-                });
-            } else if (action === 'continue') {
-                showConfirmationModal({
-                    title: 'Continue Investigation', message: `Resume live investigation for <strong>${title}</strong>?`,
-                    confirmText: 'Yes, Continue', newStatus: 'Live', goLive: true,
-                    formAction: `/investigation/${id}/update_status`
-                });
+            // --- Logic for Dashboard Cards ---
+            if (isDashboard) {
+                if (status === 'Live' || status === 'Pending') {
+                    showConfirmationModal({
+                        title: status === 'Live' ? 'Start Investigation' : 'Continue Investigation',
+                        message: `Open live screen for <strong>${title}</strong>?`,
+                        confirmText: status === 'Live' ? 'Yes, Start' : 'Yes, Continue',
+                        newStatus: 'Live',
+                        goLive: true,
+                        formAction: `/investigation/${id}/update_status`
+                    });
+                } else if (status === 'Completed') {
+                    const investigationsPageUrl = `/investigations#${timestamp}`;
+                    const message = `This investigation is complete. You can <a href="${investigationsPageUrl}">view or delete it</a>.`;
+                    showCustomFlash(message);
+                }
+            // --- Logic for Investigations Page Cards (only if an action button was clicked) ---
+            } else if (actionButton) {
+                const action = actionButton.dataset.action;
+                if (action === 'edit') {
+                    const editForm = document.getElementById('edit-investigation-form');
+                    editForm.querySelector('[name="title"]').value = card.dataset.title;
+                    editForm.querySelector('[name="location"]').value = card.dataset.location;
+                    editForm.querySelector('[name="description"]').value = card.dataset.description;
+                    editForm.action = `/investigation/${id}/edit`;
+                    if (editModalOverlay) editModalOverlay.classList.add('active');
+                } else if (action === 'delete') {
+                    showConfirmationModal({
+                        title: 'Confirm Deletion', message: `Delete <strong>${title}</strong>?`,
+                        confirmText: 'Yes, Delete', buttonColor: 'red',
+                        formAction: `/investigation/${id}/delete`
+                    });
+                } else if (action === 'start' || action === 'continue') {
+                    showConfirmationModal({
+                        title: action === 'start' ? 'Start Investigation' : 'Continue Investigation',
+                        message: `Open live screen for <strong>${title}</strong>?`,
+                        confirmText: action === 'start' ? 'Yes, Start' : 'Yes, Continue',
+                        newStatus: 'Live', goLive: true,
+                        formAction: `/investigation/${id}/update_status`
+                    });
+                }
             }
         });
     }
+
+
     
     // --- LIVE INVESTIGATION PAGE LOGIC ---
     const livePageContainer = document.querySelector('.live-modal-container');
@@ -187,7 +293,6 @@ document.addEventListener('DOMContentLoaded', function () {
                     title: 'Complete Investigation',
                     message: `Are you sure you want to mark <strong>${title}</strong> as complete?`,
                     confirmText: 'Yes, Complete',
-                    buttonColor: 'red',
                     newStatus: 'Completed',
                     formAction: `/investigation/${id}/update_status`
                 });
