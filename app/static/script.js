@@ -237,20 +237,31 @@ document.addEventListener('DOMContentLoaded', function () {
                 .then(stream => { video.srcObject = stream; })
                 .catch(err => { console.error("Error accessing camera: ", err); });
         }
+        // --- This entire captureBtn block gets replaced ---
         const captureBtn = document.getElementById('capture-btn');
         if (captureBtn) {
             captureBtn.addEventListener('click', () => {
                 const canvas = document.getElementById('canvas');
                 const capturesGrid = document.getElementById('captures-grid');
-                // THIS IS THE FIX: 'd' is changed to '2d'
+                if (!canvas || !capturesGrid || !video || video.readyState < 3) return;
+
                 const context = canvas.getContext('2d'); 
                 canvas.width = video.videoWidth;
                 canvas.height = video.videoHeight;
                 context.drawImage(video, 0, 0, canvas.width, canvas.height);
+                
+                const dataUrl = canvas.toDataURL('image/jpeg');
+
+                // NEW: Limit the number of thumbnails to 6
+                const maxThumbnails = 12;
+                if (capturesGrid.children.length >= maxThumbnails) {
+                    capturesGrid.removeChild(capturesGrid.lastChild); // Remove the oldest
+                }
+
                 const img = document.createElement('img');
-                img.src = canvas.toDataURL('image/jpeg');
+                img.src = dataUrl;
                 img.classList.add('capture-thumbnail');
-                capturesGrid.prepend(img);
+                capturesGrid.prepend(img); // Add the new one at the beginning
             });
         }
         const timeElement = document.getElementById('live-time');

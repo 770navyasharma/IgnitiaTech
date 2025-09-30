@@ -1,276 +1,291 @@
-/* --- Base Container & Theme --- */
+/* ===============================
+   Live Modal - Container & Content
+==================================*/
 .live-modal-container {
     position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(29, 22, 54, 0.6);
-    backdrop-filter: blur(10px);
+    inset: 0;
     display: flex;
     align-items: center;
     justify-content: center;
+    padding: 2.5vh 1.5vw;
+    background: rgba(29, 22, 54, 0.6);
+    backdrop-filter: blur(10px);
     animation: fadeIn 0.5s ease;
-}
-
-.live-modal-content {
-    width: 97%;
-    max-width: 1800px;
-    height: 95vh;
-    background-color: var(--bg-primary);
-    border-radius: 20px;
-    box-shadow: 0 20px 50px rgba(0,0,0,0.3);
-    display: flex;
-    flex-direction: column;
-    overflow: hidden;
-    /* UPDATED: Softer border */
-    border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
 @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
-/* --- UPDATED: Top Navigation Bar --- */
+.live-modal-content {
+    width: 100%;
+    height: 100%;
+    background: var(--bg-primary);
+    border: 1px solid var(--border-color);
+    border-radius: 20px;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.3);
+    overflow: hidden;
+}
+
+/* ===============================
+   Top Navigation Bar
+==================================*/
 .live-top-nav {
     display: flex;
     justify-content: space-between;
     align-items: center;
     padding: 0 15px 0 25px;
-    height: 55px; /* Slimmer navbar */
-    background-color: var(--text-primary);
-    color: #fff;
+    height: 55px;
+    background: var(--bg-secondary);
+    color: var(--text-primary);
+    border-bottom: 1px solid var(--border-color);
     flex-shrink: 0;
-    border-bottom: 1px solid rgba(255,255,255,0.1);
 }
-
-.nav-left { display: flex; align-items: center; gap: 20px; }
+.nav-left, .nav-right { display: flex; align-items: center; gap: 20px; }
+.nav-left { gap: 40px; }
 .nav-logo { display: flex; align-items: center; gap: 10px; }
 .nav-logo img { height: 28px; }
 .nav-logo span { font-weight: 600; font-size: 1.1rem; }
-
 .nav-menu a {
-    position: relative;
-    color: #ccc;
+    color: var(--text-secondary);
     text-decoration: none;
-    padding: 18px 15px; /* Adjusted padding for slimmer bar */
+    padding: 18px 5px;
     font-size: 0.9rem;
     font-weight: 500;
+    border-bottom: 3px solid transparent;
     transition: all 0.2s;
 }
-.nav-menu a:hover { color: #fff; }
+.nav-menu a:hover { color: var(--text-primary); }
 .nav-menu a.active {
-    color: #fff;
-    background-color: var(--accent-primary);
+    color: var(--accent-primary);
     font-weight: 600;
+    border-bottom-color: var(--accent-primary);
 }
-/* Active indicator line */
-.nav-menu a.active::after {
-    content: '';
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    height: 3px;
-    background-color: var(--accent-secondary);
-}
-
-.nav-right { display: flex; align-items: center; gap: 20px; }
-.nav-stat { display: flex; align-items: center; gap: 8px; font-size: 0.85rem; color: #eee; }
-.nav-stat .status-tag { font-size: 0.7rem; }
-
-
-/* --- UPDATED: Main Body Grid --- */
-.live-body-grid {
-    flex-grow: 1;
-    display: grid;
-    padding: 15px;
-    gap: 15px;
-    grid-template-columns: 1fr 320px; /* Slimmer sidebar */
-    /* UPDATED: Resized rows to make camera smaller and footer taller */
-    grid-template-rows: minmax(400px, 60%) 1fr;
-    grid-template-areas:
-        "feed   sidebar"
-        "footer sidebar";
-    overflow: hidden;
-}
-
-/* --- Grid Area Assignments --- */
-.video-feed-container { grid-area: feed; }
-.live-footer-container { grid-area: footer; }
-.live-sidebar { grid-area: sidebar; }
-
-/* --- Video Feed Styling --- */
-.video-feed-container {
-    background-color: #000;
-    border-radius: 12px;
-    position: relative;
-    overflow: hidden;
-    display: flex;
-}
-#camera-feed { width: 100%; height: 100%; object-fit: cover; }
-.video-overlay { position: absolute; top: 0; left: 0; right: 0; bottom: 0; }
-
-/* UPDATED: Professional Focus Reticle */
-.focus-reticle {
-    position: absolute;
-    top: 50%; left: 50%;
-    transform: translate(-50%, -50%);
-    width: 250px; height: 150px;
-    box-shadow: 0 0 0 9999px rgba(0,0,0,0.3); /* Creates a "vignette" effect */
-}
-.focus-reticle::before, .focus-reticle::after {
-    content: ''; position: absolute;
-    border: 1px solid rgba(255, 255, 255, 0.4);
-}
-.focus-reticle::before { top: 0; left: 0; right: 0; bottom: 0; } /* Outer box */
-.focus-reticle::after { top: 50%; left: 50%; transform: translate(-50%,-50%); width: 20px; height: 20px; border-radius: 50%; } /* Center circle */
-
-
-/* --- Footer & Sidebar Styling --- */
-.live-footer-container { display: grid; grid-template-columns: 220px 1fr; gap: 15px; }
-.live-sidebar { display: flex; flex-direction: column; gap: 15px; }
-.sidebar-panel {
-    background-color: var(--bg-secondary);
-    border-radius: 12px;
-    border: 1px solid var(--border-color);
-    padding: 15px;
-}
-/* Find this existing rule in your CSS file */
-.sidebar-panel {
-    background-color: var(--bg-secondary);
-    border-radius: 12px;
-    border: 1px solid var(--border-color);
-    padding: 15px;
-    
-    /* ADD THESE TWO LINES TO FIX THE ISSUE */
-    position: relative;
-    overflow: hidden;
-}
-.sidebar-panel-content {
-    position: relative;
-    z-index: 1;
-    background: var(--bg-secondary);
-    border-radius: 10px;
-    padding: 5px;
-    margin: -5px;
-}
-
-/* Info Panel */
-.info-header { display: flex; align-items: flex-start; gap: 15px; }
-.info-header img { width: 70px; height: 70px; border-radius: 8px; object-fit: cover; }
-.info-details h4 { font-size: 1.1rem; color: var(--text-primary); }
-.info-details p { font-size: 0.85rem; color: var(--text-secondary); }
-.info-details p i { margin-right: 5px; }
-
-/* Stats Panel */
-.stat-item { margin-bottom: 10px; }
-.stat-item label { display: block; font-size: 0.8rem; font-weight: 500; color: var(--text-secondary); margin-bottom: 5px; }
-.battery-bar { width: 100%; height: 10px; background-color: var(--border-color); border-radius: 5px; overflow: hidden;}
-.battery-level { width: 80%; height: 100%; background: linear-gradient(90deg, #10b981, #5eead4); }
-
-/* Virtual Controller Panel */
-.controller-layout { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; align-items: center; }
-.joystick, .d-pad { width: 100px; height: 100px; background-color: var(--bg-primary); border-radius: 50%; border: 1px solid var(--border-color); position: relative; }
-.joystick::before { content: ''; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 30px; height: 30px; background-color: #ccc; border-radius: 50%;}
-.d-pad { border-radius: 10px; } /* Simplified D-Pad */
-
-/* --- Bottom Footer Area --- */
-.live-footer {
-    grid-area: footer;
-    display: grid;
-    grid-template-columns: 250px 1fr;
-    gap: 20px;
-}
-
-/* Map Panel */
-.map-panel { background-color: var(--bg-secondary); border-radius: 12px; border: 1px solid var(--border-color); padding: 15px; }
-#map-placeholder { width: 100%; height: 120px; background: #e0e0e0 url("https://www.google.com/maps/vt/data=eXNvY2VpZDg4OTQ2MDQ1ODU"); background-size: cover; border-radius: 8px; }
-
-.capture-panel { display: flex; flex-direction: column; }
-.captures-grid { 
-    flex-grow: 1; 
-    display: grid; 
-    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
-    gap: 10px; 
-    overflow-y: auto; 
-    padding: 5px;
-    background-color: var(--bg-primary);
-    border-radius: 8px;
-}
-.capture-thumbnail { 
-    width: 100%; 
-    height: 70px; 
-    border-radius: 6px; 
-    object-fit: cover; 
-    border: 2px solid var(--border-color);
-    cursor: pointer;
-    transition: transform 0.2s, border-color 0.2s;
-}
-.capture-thumbnail:hover {
-    transform: scale(1.05);
-    border-color: var(--accent-primary);
-}
-
-.capture-actions { 
-    display: flex; 
-    gap: 10px; 
-    margin-top: 10px; 
-    border-top: 1px solid var(--border-color); 
-    padding-top: 10px; 
-}
-
-/* UPDATED: Button Styles */
-.capture-btn, .status-action-btn {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-    height: 40px; /* Smaller buttons */
-    border: none;
-    border-radius: 20px; /* More rounded */
-    font-size: 0.9rem;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.2s ease;
-}
-.capture-btn { 
-    flex-grow: 2; 
-    color: #fff;
-    background: linear-gradient(90deg, var(--accent-primary), var(--text-secondary));
-}
-.capture-btn:hover { transform: translateY(-2px); box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
-.status-action-btn { 
-    flex-grow: 1;
-    flex-basis: 0; /* This is the key change */
-    background-color: var(--bg-secondary); 
-    border: 1px solid var(--border-color); 
-    color: var(--text-secondary); 
-}
-.status-action-btn.pause:hover { background-color: #f59e0b; color: #fff; border-color: #f59e0b; }
-.status-action-btn.complete:hover { background-color: var(--accent-red); color: #fff; border-color: var(--accent-red); }
-
-
-/* --- NEW: Style for the top-right close button --- */
+.nav-stat { display: flex; align-items: center; gap: 8px; font-size: 0.85rem; color: var(--text-secondary); }
+.nav-stat i { color: var(--accent-primary); }
 .live-modal-close-link {
-    background-color: rgba(255, 255, 255, 0.1);
-    color: #fff;
-    width: 36px;
-    height: 36px;
+    width: 36px; height: 36px;
+    display: flex; align-items: center; justify-content: center;
+    background: var(--bg-primary);
+    color: var(--text-secondary);
     border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    text-decoration: none;
-    font-size: 1.1rem;
+    font-size: 1.1rem; text-decoration: none;
     transition: all 0.3s ease;
 }
-
 .live-modal-close-link:hover {
-    background-color: var(--accent-red);
+    background: var(--accent-red);
+    color: #fff;
     transform: rotate(90deg);
 }
 
-.status-buttons-group {
+/* ===============================
+   Layout - Main Body -- UPDATED
+==================================*/
+.live-body-main-grid {
+    flex-grow: 1;
+    display: grid;
+    grid-template-columns: 1fr 320px; /* main content and right sidebar */
+    gap: 15px;
+    padding: 15px;
+    overflow: hidden;
+}
+
+.live-main-content {
+    display: grid;
+    grid-template-rows: 1fr 250px; /* Video row and bottom panels row */
+    gap: 15px;
+    overflow: hidden;
+}
+
+.live-ui-column { display: flex; flex-direction: column; gap: 15px; overflow: hidden; }
+
+.live-bottom-grid {
+    display: grid;
+    grid-template-columns: 275px 1fr 1fr;
+    gap: 15px;
+}
+
+/* ===============================
+   Reusable Panels
+==================================*/
+.ui-panel {
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
     display: flex;
-    flex-grow: 2; /* This ensures the group takes up the remaining space */
-    gap: 10px;
+    flex-direction: column;
+    box-shadow: 0 4px 6px rgba(41, 28, 78, 0.05);
+}
+.panel-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px;
+    gap: 20px;
+    border-bottom: 1px solid var(--border-color);
+    background: #f8f7fb;
+}
+.panel-header h3 { font-size: 0.8rem; font-weight: 600; color: var(--text-secondary); text-transform: uppercase; }
+.panel-content { padding: 15px; overflow: auto; flex-grow: 1; }
+
+/* ===============================
+   Center Video Feed -- UPDATED
+==================================*/
+.video-feed-wrapper {
+    position: relative;
+    display: flex;
+    background: #000;
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0 4px 6px rgba(41, 28, 78, 0.05);
+}
+#camera-feed { width: 100%; height: 100%; object-fit: contain; }
+
+/* ===============================
+   Video Glass Overlay -- UPDATED
+==================================*/
+.video-glass-overlay {
+    position: absolute;
+    top: 0; left: 0;
+    bottom: 0; /* Make it full height */
+    width: 230px; /* Increase width */
+    display: flex;
+    flex-direction: column;
+    gap: 20px; /* Increased gap */
+    padding: 20px;
+    background: rgba(252, 252, 252, 0.3);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border-right: 1px solid rgba(255, 255, 255, 0.2);
+    color: var(--text-primary);
+    border-radius: 20px;
+
+}
+.glass-section { display: flex; align-items: center; gap: 10px; }
+.glass-text { font-size: 0.8rem; font-weight: 500; }
+.glass-section > label { font-size: 0.75rem; text-transform: uppercase; }
+.level-indicator { flex-grow: 1; height: 4px; background: var(--accent-primary); border-radius: 2px; }
+
+.glass-btn, .glass-btn-square, .glass-btn-color {
+    background: rgba(255, 255, 255, 0.5);
+    border: 1px solid var(--border-color);
+    color: var(--text-primary);
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+.glass-btn:hover, .glass-btn-square:hover, .glass-btn-color:hover { background: #fff; }
+.glass-btn.active { background: var(--accent-primary); color: #fff; border-color: var(--accent-primary); }
+
+.glass-btn { padding: 4px 10px; border-radius: 6px; font-size: 0.7rem; }
+.glass-btn-square { width: 32px; height: 32px; border-radius: 6px; }
+.color-buttons { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; flex-grow: 1; }
+.glass-btn-color { width: 100%; height: 32px; border-radius: 6px; }
+.histogram { align-items: flex-end; gap: 2px; height: 40px; }
+.histogram-bar { width: 4px; background: #fff; opacity: 0.7; border-radius: 2px; }
+
+/* ===============================
+   Bottom Grid Panels
+==================================*/
+.map-placeholder-sm { min-height: 100px; background: #e0e0e0; border-radius: 8px; flex-grow: 1; }
+.data-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+.data-readout label { font-size: 0.75rem; color: var(--accent-secondary); text-transform: uppercase; margin-bottom: 4px; }
+.data-readout span { font-size: 1.1rem; font-weight: 500; color: var(--text-primary); }
+
+/* ===============================
+   Right Sidebar
+==================================*/
+.drone-info-panel .drone-icon { height: 24px; opacity: 0.7; }
+.drone-info-panel p { font-size: 0.9rem; color: var(--text-secondary); line-height: 1.5; }
+.drone-info-panel p strong { font-weight: 600; color: var(--text-primary); }
+.drone-stats-panel .stat-item { margin-bottom: 15px; }
+.drone-stats-panel .stat-header {
+    display: flex; justify-content: space-between;
+    font-size: 0.8rem; margin-bottom: 5px;
+    color: var(--text-secondary);
+}
+.progress-bar { width: 100%; height: 8px; background: var(--border-color); border-radius: 4px; overflow: hidden; }
+.progress-fill { height: 100%; background: #10b981; border-radius: 4px; }
+.camera-actions { display: flex; gap: 10px; margin-top: 15px; }
+.camera-actions .ui-btn { flex-grow: 1; }
+
+/* ===============================
+   Capture Panel & Thumbnails
+==================================*/
+.capture-panel-new { flex-grow: 1; }
+.capture-panel-new .panel-content { display: flex; flex-direction: column; gap: 10px; }
+.captures-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; flex-grow: 1; }
+.capture-thumbnail { width: 100%; aspect-ratio: 16/9; object-fit: cover; border-radius: 6px; border: 2px solid var(--border-color); }
+.capture-actions { display: flex; gap: 10px; margin-top: auto; }
+.capture-btn, .status-action-btn { font-size: 0.85rem; height: 38px; border-radius: 8px; }
+.capture-btn { flex-grow: 1; }
+.status-buttons-group { display: flex; flex-grow: 1; gap: 10px; }
+.status-action-btn { flex-grow: 1; }
+
+/* Custom Slider */
+input[type=range].styled-slider { -webkit-appearance: none; width: 100%; background: transparent; }
+input[type=range].styled-slider:focus { outline: none; }
+input[type=range].styled-slider::-webkit-slider-runnable-track { width: 100%; height: 6px; cursor: pointer; background: var(--border-color); border-radius: 3px; }
+input[type=range].styled-slider::-webkit-slider-thumb { -webkit-appearance: none; width: 16px; height: 16px; margin-top: -5px; border-radius: 50%; background: var(--accent-primary); cursor: pointer; }
+
+/* ===============================
+   Modern Purple-White Theme Buttons
+==================================*/
+.ui-btn {
+    background: linear-gradient(135deg, rgba(159, 120, 255, 0.85), rgba(203, 176, 255, 0.85));
+    color: #fff;
+    border: none;
+    border-radius: 12px;
+    padding: 0.6rem 1.6rem;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.25s ease;
+    box-shadow: 0 4px 10px rgba(41, 28, 78, 0.08);
+    backdrop-filter: blur(8px); /* glassmorphism vibe */
+}
+
+/* Hover effect */
+.ui-btn:hover {
+    transform: translateY(-3px) scale(1.03);
+    box-shadow: 0 8px 20px rgba(41, 28, 78, 0.15);
+    background: linear-gradient(135deg, rgba(159, 120, 255, 1), rgba(203, 176, 255, 1));
+}
+
+/* Active / clicked effect */
+.ui-btn:active, .ui-btn.active {
+    transform: translateY(0) scale(0.98);
+    box-shadow: 0 4px 10px rgba(41, 28, 78, 0.08);
+    background: linear-gradient(135deg, rgba(145, 100, 245, 0.95), rgba(190, 160, 250, 0.95));
+}
+
+/* Optional focus / keyboard accessibility */
+.ui-btn:focus {
+    outline: 2px solid rgba(159, 120, 255, 0.6);
+    outline-offset: 2px;
+}
+
+.capture-btn, .status-action-btn {
+    border: none;
+    transition: all 0.2s ease;
+    box-shadow: 0 2px 4px rgba(41, 28, 78, 0.08);
+}
+.capture-btn:hover, .status-action-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(41, 28, 78, 0.15);
+}
+.capture-btn:active, .status-action-btn:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 4px rgba(41, 28, 78, 0.08);
+}
+
+.capture-btn { background: var(--accent-primary); color: #fff; }
+.capture-btn:hover { background: var(--text-primary); }
+
+.status-action-btn { background-color: var(--bg-primary); border: 1px solid var(--border-color); color: var(--text-secondary); }
+.status-action-btn.pause:hover { background-color: #f59e0b; color: #fff; border-color: #f59e0b; }
+.status-action-btn.complete:hover { background-color: var(--accent-red); color: #fff; border-color: var(--accent-red); }
+
+.header-buttons{
+    display: flex;
+    gap: 30%;
 }
