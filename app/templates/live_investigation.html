@@ -69,6 +69,17 @@
                                 <div class="histogram-bar" style="height: 30%;"></div>
                                 <span class="glass-text">H2.85</span>
                             </div>
+                            <div class="glass-section">
+                                <button id="open-drone-speaker-modal" class="glass-btn speaker-btn">
+                                    <i class="fas fa-volume-up"></i> Drone Audio
+                                </button>
+                            </div>
+
+                            <div class="glass-section">
+                                <button id="open-ai-assistant-modal" class="glass-btn ai-assistant-btn">
+                                    <i class="fas fa-brain"></i> AI Assistant
+                                </button>
+                            </div>
                         </div>
                     </div>
 
@@ -138,9 +149,21 @@
                     </div>
                     
                     <div class="ui-panel capture-panel-new">
-                        <div class="panel-header"><h3>Recent Captures</h3></div>
+                        <div class="panel-header"><h3>Recent Captures
+                            <span class="capture-count" id="capture-count-display">
+                                ({{ recent_captures|length }})
+                            </span>
+                        </h3></div>
                         <div class="panel-content">
-                            <div class="captures-grid" id="captures-grid"></div>
+                            <div class="captures-grid" id="captures-grid">
+                                {% for capture in recent_captures %}
+                                    <img src="{{ url_for('static', filename='captures/' + capture.image_filename) }}" 
+                                        class="capture-thumbnail">
+                                {% endfor %}
+                            </div>
+                            <p class="report-note">
+                                All captures can be found under <strong>{{ investigation.title }}</strong> in the reports section for detailed review.
+                            </p>
                             <div class="capture-actions">
                                 <button class="capture-btn" id="capture-btn"><i class="fas fa-camera"></i> Capture</button>
                                 <div class="status-buttons-group">
@@ -155,7 +178,10 @@
         </div>
     </div>
     {% include '_confirmation_modal.html' %}
+    {% include '_drone_speaker_modal.html' %}
+    {% include '_ai_assistant_modal.html' %}
     <canvas id="canvas" style="display:none;"></canvas>
     <script src="{{ url_for('static', filename='script.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/live_investigation.js') }}"></script>
 </body>
 </html>

@@ -6,8 +6,9 @@
     
     {% if grouped_investigations %}
         {% for date, investigations_on_date in grouped_investigations.items() %}
-            <h2 class="date-group-header" id="{{ date.strftime('%Y-%m-%d') }}">{{ date.strftime('%B %d, %Y') }}</h2>
-            
+            <h2 class="date-group-header" id="{{ date.strftime('%Y-%m-%d') }}">
+                {{ date.strftime('%B %d, %Y') }}
+            </h2>
             <div class="investigations-grid">
                 {% for inv in investigations_on_date %}
                     <div class="inv-card" 

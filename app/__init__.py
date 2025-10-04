@@ -39,5 +39,8 @@ def create_app():
     # --- Register Blueprints ---
     from .routes import main as main_blueprint
     app.register_blueprint(main_blueprint)
+    from . import analysis_utils
+    with app.app_context():
+        analysis_utils.initialize_models()
 
     return app

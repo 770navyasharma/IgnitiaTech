@@ -15,6 +15,10 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/investigations.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/flash.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/live_investigation.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/reports.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/analysis_modals.css') }}"> 
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
 
 
 
@@ -43,7 +47,6 @@
         
         <nav class="sidebar-nav">
             <a href="{{ url_for('main.home') }}" class="{{ 'active' if active_page == 'home' else '' }}"><i class="fas fa-home"></i> <span>Dashboard</span></a>
-            <a href="{{ url_for('main.analytics') }}" class="{{ 'active' if active_page == 'analytics' else '' }}"><i class="fas fa-chart-bar"></i> <span>Analytics</span></a>
             <a href="{{ url_for('main.reports') }}" class="{{ 'active' if active_page == 'reports' else '' }}"><i class="fas fa-file-alt"></i> <span>Reports</span></a>
             <a href="{{ url_for('main.investigations') }}" class="{{ 'active' if active_page == 'investigations' else '' }}"><i class="fas fa-search-location"></i> <span>Investigations</span></a>
             <a href="{{ url_for('main.settings') }}" class="{{ 'active' if active_page == 'settings' else '' }}"><i class="fas fa-cog"></i> <span>Settings</span></a>
@@ -114,6 +117,9 @@
 
     {% include '_edit_investigation_modal.html' %}
     {% include '_confirmation_modal.html' %}
+    {% include '_captures_modal.html' %}
+    {% include '_group_analysis_modal.html' %}
+    {% include '_person_details_modal.html' %}
 
     <script src="{{ url_for('static', filename='script.js') }}"></script>
 </body>

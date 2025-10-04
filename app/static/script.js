@@ -1,3 +1,53 @@
+
+
+// static/script.js
+
+// --- Make this a GLOBAL function by defining it here ---
+function showConfirmationModal(config) {
+    const confirmationModalOverlay = document.getElementById('confirmation-modal-overlay');
+    if (!confirmationModalOverlay) return;
+
+    const titleEl = document.getElementById('confirmation-title');
+    const messageEl = document.getElementById('confirmation-message');
+    const confirmBtnEl = document.getElementById('confirmation-confirm-btn');
+    const formEl = document.getElementById('confirmation-form');
+    
+    // --- UPDATED BUTTON STYLING LOGIC ---
+    // Use classList for more precise control instead of resetting the whole className
+    confirmBtnEl.classList.remove('primary', 'danger'); // Remove any previous color classes
+
+    if (config.buttonColor === 'red') {
+        confirmBtnEl.classList.add('danger'); // Add danger class for red buttons
+    } else {
+        confirmBtnEl.classList.add('primary'); // Add primary class for default purple buttons
+    }
+    // --- END OF UPDATED LOGIC ---
+
+    formEl.querySelectorAll('input[type="hidden"]').forEach(input => input.remove());
+    titleEl.textContent = config.title;
+    messageEl.innerHTML = config.message;
+    confirmBtnEl.textContent = config.confirmText;
+    formEl.action = config.formAction;
+    
+    if (config.newStatus) {
+        const statusInput = document.createElement('input');
+        statusInput.type = 'hidden';
+        statusInput.name = 'new_status';
+        statusInput.value = config.newStatus;
+        formEl.appendChild(statusInput);
+    }
+    if (config.goLive) {
+        const goLiveInput = document.createElement('input');
+        goLiveInput.type = 'hidden';
+        goLiveInput.name = 'go_live';
+        goLiveInput.value = 'true';
+        formEl.appendChild(goLiveInput);
+    }
+    
+    confirmationModalOverlay.classList.add('active');
+}
+
+
 document.addEventListener('DOMContentLoaded', function () {
     // --- Sidebar Logic ---
     const toggleBtn = document.getElementById('sidebar-toggle-btn');
@@ -75,37 +125,6 @@ document.addEventListener('DOMContentLoaded', function () {
         if(cancelBtn) cancelBtn.addEventListener('click', closeConfirmationModal);
     }
 
-    // Function to open the confirmation modal
-    function showConfirmationModal(config) {
-        const titleEl = document.getElementById('confirmation-title');
-        const messageEl = document.getElementById('confirmation-message');
-        const confirmBtnEl = document.getElementById('confirmation-confirm-btn');
-        const formEl = document.getElementById('confirmation-form');
-        
-        formEl.querySelectorAll('input[type="hidden"]').forEach(input => input.remove());
-        titleEl.textContent = config.title;
-        messageEl.innerHTML = config.message;
-        confirmBtnEl.textContent = config.confirmText;
-        confirmBtnEl.style.background = config.buttonColor === 'red' ? 'var(--accent-red)' : '';
-        formEl.action = config.formAction;
-        
-        if (config.newStatus) {
-            const statusInput = document.createElement('input');
-            statusInput.type = 'hidden';
-            statusInput.name = 'new_status';
-            statusInput.value = config.newStatus;
-            formEl.appendChild(statusInput);
-        }
-        if (config.goLive) {
-            const goLiveInput = document.createElement('input');
-            goLiveInput.type = 'hidden';
-            goLiveInput.name = 'go_live';
-            goLiveInput.value = 'true';
-            formEl.appendChild(goLiveInput);
-        }
-        
-        confirmationModalOverlay.classList.add('active');
-    }
     
     function showCustomFlash(message) {
         const container = document.querySelector('.flash-messages');
@@ -221,92 +240,6 @@ document.addEventListener('DOMContentLoaded', function () {
                         formAction: `/investigation/${id}/update_status`
                     });
                 }
-            }
-        });
-    }
-
-
-    
-    // --- LIVE INVESTIGATION PAGE LOGIC ---
-    const livePageContainer = document.querySelector('.live-modal-container');
-    if (livePageContainer) {
-        // Camera, capture, and time logic (remains unchanged)
-        const video = document.getElementById('camera-feed');
-        if (video && navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
-            navigator.mediaDevices.getUserMedia({ video: true })
-                .then(stream => { video.srcObject = stream; })
-                .catch(err => { console.error("Error accessing camera: ", err); });
-        }
-        // --- This entire captureBtn block gets replaced ---
-        const captureBtn = document.getElementById('capture-btn');
-        if (captureBtn) {
-            captureBtn.addEventListener('click', () => {
-                const canvas = document.getElementById('canvas');
-                const capturesGrid = document.getElementById('captures-grid');
-                if (!canvas || !capturesGrid || !video || video.readyState < 3) return;
-
-                const context = canvas.getContext('2d'); 
-                canvas.width = video.videoWidth;
-                canvas.height = video.videoHeight;
-                context.drawImage(video, 0, 0, canvas.width, canvas.height);
-                
-                const dataUrl = canvas.toDataURL('image/jpeg');
-
-                // NEW: Limit the number of thumbnails to 6
-                const maxThumbnails = 12;
-                if (capturesGrid.children.length >= maxThumbnails) {
-                    capturesGrid.removeChild(capturesGrid.lastChild); // Remove the oldest
-                }
-
-                const img = document.createElement('img');
-                img.src = dataUrl;
-                img.classList.add('capture-thumbnail');
-                capturesGrid.prepend(img); // Add the new one at the beginning
-            });
-        }
-        const timeElement = document.getElementById('live-time');
-        if (timeElement) {
-            const updateTime = () => timeElement.textContent = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-            setInterval(updateTime, 1000);
-            updateTime();
-        }
-
-        // This listener handles all the buttons on the live modal
-        livePageContainer.addEventListener('click', function(e) {
-            // Find which button was clicked, if any
-            const pauseButton = e.target.closest('.status-action-btn.pause');
-            const completeButton = e.target.closest('.status-action-btn.complete');
-            const closeButton = e.target.closest('#live-modal-close-btn');
-
-            // If none of our target buttons were clicked, do nothing
-            if (!pauseButton && !completeButton && !closeButton) {
-                return;
-            }
-
-            e.preventDefault();
-
-            const id = livePageContainer.dataset.investigationId;
-            const title = livePageContainer.dataset.investigationTitle;
-
-            // Handle Pause and Close the exact same way
-            if (pauseButton || closeButton) {
-                showConfirmationModal({
-                    title: 'Pause Investigation',
-                    message: `This will pause the investigation and return you to the main screen. Proceed?`,
-                    confirmText: 'Yes, Pause',
-                    newStatus: 'Pending',
-                    formAction: `/investigation/${id}/update_status`
-                });
-            } 
-            // Handle Complete Button
-            else if (completeButton) {
-                 showConfirmationModal({
-                    title: 'Complete Investigation',
-                    message: `Are you sure you want to mark <strong>${title}</strong> as complete?`,
-                    confirmText: 'Yes, Complete',
-                    newStatus: 'Completed',
-                    formAction: `/investigation/${id}/update_status`
-                });
             }
         });
     }
