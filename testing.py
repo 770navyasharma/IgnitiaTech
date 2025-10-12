@@ -1,4 +1,6 @@
 import os
+from dotenv import load_dotenv
+load_dotenv()
 import asyncio
 import sounddevice as sd
 import numpy as np
