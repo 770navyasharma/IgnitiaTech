@@ -35,7 +35,7 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 0 20px;
+    padding: 0 15px;
     height: 50px;
     background: linear-gradient(90deg, var(--text-primary), var(--accent-primary));
     border-bottom: 1px solid var(--border-color);
@@ -48,22 +48,10 @@
 }
 
 .section-title {
-    font-size: 1.1rem;
+    font-size: 1rem;
     font-weight: 600;
     color: var(--bg-primary);
     margin: 0;
-}
-
-.view-all-link {
-    text-decoration: none;
-    font-size: 0.85rem;
-    font-weight: 600;
-    color: var(--bg-secondary);
-    transition: color 0.2s ease;
-}
-
-.view-all-link:hover {
-    color: var(--bg-primary);
 }
 
 
@@ -236,7 +224,7 @@
 /* --- NEW: View All Link Style for Card Headers --- */
 .view-all-link {
     text-decoration: none;
-    font-size: 0.85rem;
+    font-size: 0.7rem;
     font-weight: 600;
     color: var(--bg-secondary);
     transition: color 0.2s ease;
@@ -247,7 +235,7 @@
 }
 
 .view-all-link i {
-    margin-left: 5px;
+    margin-left: 10px;
 }
 
 /* static/css/dashboard.css */
@@ -319,6 +307,10 @@
     }
 
     .dashboard-grid .inv-card .inv-card-image {
-        height: 120px;
+        height: 150px;
+    }
+
+    .dashboard-grid .inv-card h3{
+        font-size: 0.8rem;
     }
 }
