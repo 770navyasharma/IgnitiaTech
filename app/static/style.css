@@ -492,3 +492,125 @@ margin-top: 20px;
 
 
 
+/* Paste this at the VERY END of your existing style.css file */
+/* This replaces the previous responsive block */
+
+/* --- Mobile Nav Toggle Button (Hidden on Desktop) --- */
+.mobile-nav-toggle {
+    display: none; /* Hide by default */
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    line-height: 0; /* Helps with alignment */
+}
+.mobile-nav-toggle img {
+    height: 40px;
+    width: auto;
+}
+
+/* --- Sidebar Overlay (Hidden by default) --- */
+.sidebar-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.4);
+    z-index: 999;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease, visibility 0.3s ease;
+}
+.sidebar-overlay.active {
+    opacity: 1;
+    visibility: visible;
+}
+
+/*
+=================================================
+    RESPONSIVE STYLES (TABLET & MOBILE)
+=================================================
+*/
+
+@media (max-width: 1024px) {
+    /* --- Main Layout --- */
+    .content-wrapper {
+        margin-left: 0;
+        padding: 0;
+    }
+    .content-area {
+        border-radius: 0;
+    }
+    .top-content-bar {
+        padding: 10px 15px;
+        /* Ensure logo is on left, icons on right */
+        justify-content: space-between; 
+    }
+
+    /* --- Show the Mobile Toggle Button --- */
+    .mobile-nav-toggle {
+        display: block;
+    }
+
+    /* --- 1. Increase Mobile Logo Size --- */
+    .mobile-nav-toggle img {
+        height: 60px; /* Increased from 40px */
+        width: auto;
+    }
+
+    /* Hide the original page title to make space */
+    .page-title {
+        display: none;
+    }
+
+    /* --- Sidebar as Overlay --- */
+    .sidebar {
+        transform: translateX(-100%);
+        box-shadow: 0 0 25px rgba(0,0,0,0.1);
+        transition: transform 0.3s ease-in-out !important;
+    }
+    body.sidebar-mobile-open .sidebar {
+        transform: translateX(0);
+    }
+
+    /* --- 2. Disable Desktop Logo Click --- */
+    /* This targets the logo INSIDE the sidebar on mobile */
+    #sidebar-toggle-btn {
+        pointer-events: none; /* Makes it unclickable */
+        cursor: default;      /* Removes the hand pointer */
+    }
+    
+    /* --- Top Bar Right Items --- */
+    .btn-new-investigation {
+        width: 40px;
+        height: 40px;
+        padding: 0;
+        border-radius: 12px;
+        flex-shrink: 0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+    .btn-new-investigation span {
+        display: none;
+    }
+    .btn-new-investigation .fas.fa-plus {
+        margin: 0;
+        font-size: 1.2rem;
+    }
+
+    .search-container {
+        display: none;
+    }
+}
+
+/* Tablet Only: 769px to 1024px */
+@media (min-width: 769px) and (max-width: 1024px) {
+    .search-container {
+        display: block;
+    }
+    .search-input {
+        width: 200px;
+    }
+}

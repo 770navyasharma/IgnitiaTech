@@ -215,3 +215,95 @@
 .btn.btn-secondary:hover {
     background-color: #ccc;
 }
+
+/*
+=================================================
+    INVESTIGATIONS PAGE - RESPONSIVE STYLES
+=================================================
+*/
+
+/* --- For Tablets (e.g., iPads) --- */
+@media (max-width: 1024px) {
+    .investigations-grid {
+        /* Show exactly 3 cards per row */
+        grid-template-columns: repeat(3, 1fr);
+        gap: 20px; /* Slightly reduce gap */
+    }
+}
+
+/* --- For Mobile Devices --- */
+@media (max-width: 768px) {
+    .investigations-grid {
+        /* Keep the 3-column gallery layout on mobile */
+        grid-template-columns: repeat(2, 1fr);
+        /* Tighter gap for small screens */
+        gap: 10px;
+        padding: 10px 0;
+    }
+
+    .date-group-header {
+        font-size: 1.1rem;
+        margin-bottom: 15px;
+        margin-top: 25px;
+    }
+
+    .inv-card {
+        border-radius: 12px; /* Slightly smaller radius */
+    }
+
+    .inv-card-top-header {
+        padding: 8px; /* Reduce header padding */
+    }
+
+    .inv-card-top-header h3 {
+        font-size: 0.8rem; /* Smaller title font */
+    }
+
+    .status-tag {
+        /* Hide the status text on mobile to save space */
+        font-size: 0;
+        padding: 0;
+        width: 10px; /* Turn tag into a small status dot */
+        height: 10px;
+        min-width: 10px;
+    }
+
+    .inv-card-image {
+        /* Create a square, gallery-like image */
+        aspect-ratio: 1 / 1;
+        height: auto;
+    }
+
+    /* Hide the detailed content on mobile for a minimal look */
+    .inv-card-content {
+        display: none;
+    }
+
+    .inv-card-footer {
+        padding: 8px;
+        gap: 8px;
+    }
+
+    /* --- THE KEY CHANGE FOR BUTTONS --- */
+    .inv-action-btn {
+        /* Make buttons smaller and square for icons */
+        padding: 6px;
+        width: 40px;
+        height: 40px;
+        font-size: 0.9rem;
+        gap: 0; /* Remove gap between icon and hidden text */
+        
+        /* Center the icon perfectly */
+        justify-content: center;
+    }
+
+    /* Hide the text inside the button */
+    .inv-action-btn .btn-text {
+        display: none;
+    }
+
+    /* Center the icon when text is gone */
+    .inv-action-btn i {
+        margin-right: 0;
+    }
+}

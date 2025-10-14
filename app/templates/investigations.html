@@ -33,21 +33,21 @@
 
                         <div class="inv-card-footer">
                             {% if inv.status == 'Live' %}
-                                <button class="inv-action-btn edit" data-action="edit"><i class="fas fa-pencil-alt"></i> Edit</button>
-                                <button class="inv-action-btn start" data-action="start"><i class="fas fa-play"></i> Start</button>
-                                <button class="inv-action-btn delete" data-action="delete"><i class="fas fa-trash-alt"></i> Delete</button>
+                                <button class="inv-action-btn edit" data-action="edit"><i class="fas fa-pencil-alt"></i><span class="btn-text">Edit</span></button>
+                                <button class="inv-action-btn start" data-action="start"><i class="fas fa-play"></i><span class="btn-text">Start</span></button>
+                                <button class="inv-action-btn delete" data-action="delete"><i class="fas fa-trash-alt"></i><span class="btn-text">Delete</span></button>
                             
                             {% elif inv.status == 'Pending' %}
-                                <button class="inv-action-btn edit" data-action="edit"><i class="fas fa-pencil-alt"></i> Edit</button>
-                                <button class="inv-action-btn continue" data-action="continue"><i class="fas fa-play-circle"></i> Continue</button>
-                                <button class="inv-action-btn delete" data-action="delete"><i class="fas fa-trash-alt"></i> Delete</button>
+                                <button class="inv-action-btn edit" data-action="edit"><i class="fas fa-pencil-alt"></i><span class="btn-text">Edit</span></button>
+                                <button class="inv-action-btn continue" data-action="continue"><i class="fas fa-play-circle"></i><span class="btn-text">Continue</span></button>
+                                <button class="inv-action-btn delete" data-action="delete"><i class="fas fa-trash-alt"></i><span class="btn-text">Delete</span></button>
                            
                             {% elif inv.status == 'Completed' %}
-                                <button class="inv-action-btn edit" data-action="edit"><i class="fas fa-pencil-alt"></i> Edit</button>
-                                <button class="inv-action-btn delete" data-action="delete"><i class="fas fa-trash-alt"></i> Delete</button>
+                                <button class="inv-action-btn edit" data-action="edit"><i class="fas fa-pencil-alt"></i><span class="btn-text">Edit</span></button>
+                                <button class="inv-action-btn delete" data-action="delete"><i class="fas fa-trash-alt"></i><span class="btn-text">Delete</span></button>
                             {% endif %}
                         </div>
-                        </div>
+                    </div>
                 {% endfor %}
             </div>
         {% endfor %}

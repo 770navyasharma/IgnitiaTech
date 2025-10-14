@@ -139,7 +139,7 @@ def logout():
 @main.route('/')
 @login_required
 def home():
-    active_investigations = Investigation.query.filter_by(author=current_user).order_by(Investigation.timestamp.desc()).limit(4).all()
+    active_investigations = Investigation.query.filter_by(author=current_user).order_by(Investigation.timestamp.desc()).limit(6).all()
     total_investigations_count = Investigation.query.filter_by(author=current_user).count()
     recent_reports = Report.query.filter_by(author=current_user).limit(4).all()
     thread_feed = ThreadFeedItem.query.order_by(ThreadFeedItem.timestamp.desc()).limit(5).all()
@@ -511,6 +511,30 @@ def analyze_capture(capture_id):
 
     if "error" in analysis_results:
         return jsonify(analysis_results), 500
+
+    # ===== START: NEW CODE TO SAVE ANALYSIS =====
+    try:
+        # Check if analysis already exists to avoid duplicates
+        existing_analysis = AnalysisResult.query.filter_by(capture_id=capture.id).first()
+        if not existing_analysis:
+            existing_analysis = AnalysisResult(capture_id=capture.id)
+
+        group_stats = analysis_results.get('group_stats', {})
+        existing_analysis.male_count = group_stats.get('male_count', 0)
+        existing_analysis.female_count = group_stats.get('female_count', 0)
+        existing_analysis.panic_score = group_stats.get('panic_score', 0.0)
+        
+        # Aggregate emotions from individual faces into a dictionary
+        emotions = [face.get('emotion_label', 'unknown') for face in analysis_results.get('faces', [])]
+        emotion_counts = {emotion: emotions.count(emotion) for emotion in set(emotions) if emotion != 'unknown'}
+        existing_analysis.emotion_summary = emotion_counts
+
+        db.session.add(existing_analysis)
+        db.session.commit()
+    except Exception as e:
+        db.session.rollback()
+        print(f"Error saving analysis result: {e}")
+    # ===== END: NEW CODE TO SAVE ANALYSIS =====
 
     return jsonify(analysis_results)
 # ================================================

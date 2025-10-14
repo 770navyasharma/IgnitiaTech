@@ -3,6 +3,9 @@ import os
 from flask import Flask
 from flask_login import LoginManager
 from .models import db, User
+from flask_migrate import Migrate
+
+migrate = Migrate()
 
 def create_app():
     # Use instance_relative_config to tell Flask the instance folder is outside the app package
@@ -28,6 +31,7 @@ def create_app():
 
     # --- Initialize Extensions ---
     db.init_app(app)
+    migrate.init_app(app, db)
     login_manager = LoginManager(app)
     login_manager.login_view = 'main.login' 
     login_manager.login_message_category = 'info'

@@ -90,3 +90,6 @@ class Capture(db.Model):
 
     def __repr__(self):
         return f"Capture('{self.image_filename}', Investigation ID: {self.investigation_id})"
+    
+    
+    

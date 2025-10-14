@@ -49,16 +49,47 @@ function showConfirmationModal(config) {
 
 
 document.addEventListener('DOMContentLoaded', function () {
-    // --- Sidebar Logic ---
-    const toggleBtn = document.getElementById('sidebar-toggle-btn');
+    // --- Universal Elements ---
     const html = document.documentElement;
-    window.addEventListener('load', () => document.body.classList.add('transitions-enabled'));
-    function toggleSidebar() {
-        const state = html.dataset.sidebarState === 'collapsed' ? 'open' : 'collapsed';
-        html.dataset.sidebarState = state;
-        localStorage.setItem('sidebarState', state);
+    const body = document.body;
+    
+    // Enable transitions after page load to prevent initial flicker
+    window.addEventListener('load', () => body.classList.add('transitions-enabled'));
+
+    // --- 1. DESKTOP Sidebar Logic ---
+    const desktopToggleBtn = document.getElementById('sidebar-toggle-btn');
+    if (desktopToggleBtn) {
+        desktopToggleBtn.addEventListener('click', function() {
+            // Your original desktop code, works perfectly
+            const state = html.dataset.sidebarState === 'collapsed' ? 'open' : 'collapsed';
+            html.dataset.sidebarState = state;
+            localStorage.setItem('sidebarState', state);
+        });
     }
-    if (toggleBtn) toggleBtn.addEventListener('click', toggleSidebar);
+    
+    // --- 2. MOBILE Sidebar Logic ---
+    const mobileToggleBtn = document.getElementById('mobile-sidebar-toggle');
+    const sidebarOverlay = document.querySelector('.sidebar-overlay');
+    const sidebarLinks = document.querySelectorAll('.sidebar-nav a');
+
+    if (mobileToggleBtn) {
+        mobileToggleBtn.addEventListener('click', function() {
+            body.classList.add('sidebar-mobile-open');
+            sidebarOverlay.classList.add('active');
+        });
+    }
+
+    function closeMobileSidebar() {
+        body.classList.remove('sidebar-mobile-open');
+        sidebarOverlay.classList.remove('active');
+    }
+
+    if (sidebarOverlay) {
+        sidebarOverlay.addEventListener('click', closeMobileSidebar);
+    }
+    sidebarLinks.forEach(link => {
+        link.addEventListener('click', closeMobileSidebar);
+    });
 
     // --- Main App Modal Logic ---
     const openModalBtn = document.getElementById('open-modal-btn');

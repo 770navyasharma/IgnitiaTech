@@ -15,6 +15,14 @@
     align-items: start;
 }
 
+/* --- ADD THIS NEW RULE --- */
+.dashboard-side-column {
+    display: grid;
+    gap: 24px;
+    align-content: start;
+}
+/* --- END OF NEW RULE --- */
+
 /* --- NEW: Main Card Structure --- */
 .dashboard-card {
     background-color: var(--bg-primary);
@@ -29,7 +37,7 @@
     align-items: center;
     padding: 0 20px;
     height: 50px;
-    background: linear-gradient(90deg, #fdfdff, #8b74cc);
+    background: linear-gradient(90deg, var(--text-primary), var(--accent-primary));
     border-bottom: 1px solid var(--border-color);
     border-top-left-radius: 16px;
     border-top-right-radius: 16px;
@@ -42,8 +50,20 @@
 .section-title {
     font-size: 1.1rem;
     font-weight: 600;
-    color: var(--text-primary);
+    color: var(--bg-primary);
     margin: 0;
+}
+
+.view-all-link {
+    text-decoration: none;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--bg-secondary);
+    transition: color 0.2s ease;
+}
+
+.view-all-link:hover {
+    color: var(--bg-primary);
 }
 
 
@@ -145,7 +165,7 @@
 .icon-button-dash{
     background-color: transparent;
     border: 1px solid var(--border-color);
-    color: var(--text-secondary);
+    color: var(--bg-secondary);
     width: 35px;
     height: 35px;
     border-radius: 50%; 
@@ -218,15 +238,87 @@
     text-decoration: none;
     font-size: 0.85rem;
     font-weight: 600;
-    color: var(--text-secondary);
+    color: var(--bg-secondary);
     transition: color 0.2s ease;
 }
 
 .view-all-link:hover {
-    color: var(--text-primary);
-    text-decoration: underline;
+    color: var(--bg-primary);
 }
 
 .view-all-link i {
     margin-left: 5px;
+}
+
+/* static/css/dashboard.css */
+
+/*
+=================================================
+    DASHBOARD RESPONSIVE STYLES
+=================================================
+*/
+
+/* --- Default Desktop Layout (4 cards) ---
+/* Hide cards after the 4th one on large screens */
+/* .investigation-grid .inv-card:nth-child(n+5) {
+    display: none;
+} */ 
+
+/* For Tablets (and smaller screens) */
+@media (max-width: 1200px) {
+    .dashboard-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .dashboard-side-column {
+        display: flex;
+        flex-direction: column;
+        gap: 24px;
+    }
+
+    /* --- Tablet Layout: 3 cards per row --- */
+    .investigation-grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+
+    /* Show the 5th and 6th cards, which were hidden on desktop */
+    .investigation-grid .inv-card:nth-child(5),
+    .investigation-grid .inv-card:nth-child(6) {
+        display: block;
+    }
+    
+    /* Now, hide any cards after the 6th one on tablet */
+    .investigation-grid .inv-card:nth-child(n+7) {
+        display: none;
+    }
+
+    /* Re-order the side cards */
+    .dashboard-card--reports {
+        order: 1;
+    }
+    .dashboard-card--analytics {
+        order: 2;
+    }
+}
+
+/* For Mobile phones */
+@media (max-width: 576px) {
+    /* --- Mobile Layout: 1 card per row (stacked) --- */
+    .investigation-grid {
+        grid-template-columns: 1fr;
+    }
+
+    /* --- Show ONLY the first 2 investigation cards --- */
+    /* This rule will override the tablet and desktop rules */
+    .investigation-grid .inv-card:nth-child(n+3) {
+        display: none;
+    }
+
+    .dashboard-grid .inv-card h3 {
+        max-width: 200px;
+    }
+
+    .dashboard-grid .inv-card .inv-card-image {
+        height: 120px;
+    }
 }

@@ -35,7 +35,8 @@
 </head>
 <body>
     <!-- Add this once in base.html (inside <body>, near top or before </body>) -->
-<div class="flash-messages" aria-live="polite" aria-atomic="true"></div>
+    <div class="flash-messages" aria-live="polite" aria-atomic="true"></div>
+    <div class="sidebar-overlay"></div>
 
     <aside class="sidebar">
         <div class="sidebar-header">
@@ -57,13 +58,17 @@
     <div class="content-wrapper">
         <main class="content-area">
             <div class="top-content-bar">
+                <button id="mobile-sidebar-toggle" class="mobile-nav-toggle">
+                    <img src="{{ url_for('static', filename='images/logo.png') }}" alt="Menu">
+                </button>
                 <div class="page-title">
                     <h1>{% block page_title %}{% endblock %}</h1>
                 </div>
 
                 <div class="top-bar-right">
                     <a href="#" id="open-modal-btn" class="btn btn-primary btn-new-investigation">
-                        <i class="fas fa-plus"></i> New Investigation
+                        <i class="fas fa-plus"></i>
+                        <span>New Investigation</span>
                     </a>
                     <div class="search-container">
                         <form action="#" method="GET">
@@ -122,5 +127,6 @@
     {% include '_person_details_modal.html' %}
 
     <script src="{{ url_for('static', filename='script.js') }}"></script>
+    {% block scripts %}{% endblock %}
 </body>
 </html>
